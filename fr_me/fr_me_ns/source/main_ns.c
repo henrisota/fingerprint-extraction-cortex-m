@@ -38,12 +38,6 @@ int main(void) {
 
     PRINTF_NSE("Normal World\r\n");
 
-    result = StringCompare_NSE(&strcmp, "Test1\r\n", "Test2\r\n");
-    if (result == 0) {
-        PRINTF_NSE("Both strings are equal!\r\n");
-    } else {
-        PRINTF_NSE("Both strings are not equal!\r\n");
-    }
     while (1) {
     }
 }
