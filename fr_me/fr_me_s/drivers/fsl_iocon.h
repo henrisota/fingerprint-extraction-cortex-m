@@ -36,11 +36,12 @@
 /**
  * @brief Array of IOCON pin definitions passed to IOCON_SetPinMuxing() must be in this format
  */
-typedef struct _iocon_group {
-	uint8_t port; /* Pin port */
-	uint8_t pin; /* Pin number */
-	uint8_t ionumber; /* IO number */
-	uint16_t modefunc; /* Function and mode */
+typedef struct _iocon_group
+{
+    uint8_t port;      /* Pin port */
+    uint8_t pin;       /* Pin number */
+    uint8_t ionumber;  /* IO number */
+    uint16_t modefunc; /* Function and mode */
 } iocon_group_t;
 
 /**
@@ -158,54 +159,54 @@ extern "C" {
 #endif
 
 #if (defined(FSL_FEATURE_IOCON_ONE_DIMENSION) && (FSL_FEATURE_IOCON_ONE_DIMENSION == 1))
-	/**
-	 * @brief   Sets I/O Control pin mux
-	 * @param   base        : The base of IOCON peripheral on the chip
-	 * @param   ionumber    : GPIO number to mux
-	 * @param   modefunc    : OR'ed values of type IOCON_*
-	 * @return  Nothing
-	 */
-	__STATIC_INLINE void IOCON_PinMuxSet(IOCON_Type *base, uint8_t ionumber, uint32_t modefunc)
-	{
-		base->PIO[ionumber] = modefunc;
-	}
+/**
+ * @brief   Sets I/O Control pin mux
+ * @param   base        : The base of IOCON peripheral on the chip
+ * @param   ionumber    : GPIO number to mux
+ * @param   modefunc    : OR'ed values of type IOCON_*
+ * @return  Nothing
+ */
+__STATIC_INLINE void IOCON_PinMuxSet(IOCON_Type *base, uint8_t ionumber, uint32_t modefunc)
+{
+    base->PIO[ionumber] = modefunc;
+}
 #else
-	/**
-	 * @brief   Sets I/O Control pin mux
-	 * @param   base        : The base of IOCON peripheral on the chip
-	 * @param   port        : GPIO port to mux
-	 * @param   pin         : GPIO pin to mux
-	 * @param   modefunc    : OR'ed values of type IOCON_*
-	 * @return  Nothing
-	 */
-	__STATIC_INLINE void IOCON_PinMuxSet(IOCON_Type *base, uint8_t port,
-			uint8_t pin, uint32_t modefunc) {
-		base->PIO[port][pin] = modefunc;
-	}
+/**
+ * @brief   Sets I/O Control pin mux
+ * @param   base        : The base of IOCON peripheral on the chip
+ * @param   port        : GPIO port to mux
+ * @param   pin         : GPIO pin to mux
+ * @param   modefunc    : OR'ed values of type IOCON_*
+ * @return  Nothing
+ */
+__STATIC_INLINE void IOCON_PinMuxSet(IOCON_Type *base, uint8_t port, uint8_t pin, uint32_t modefunc)
+{
+    base->PIO[port][pin] = modefunc;
+}
 #endif
 
-	/**
-	 * @brief   Set all I/O Control pin muxing
-	 * @param   base        : The base of IOCON peripheral on the chip
-	 * @param   pinArray    : Pointer to array of pin mux selections
-	 * @param   arrayLength : Number of entries in pinArray
-	 * @return  Nothing
-	 */
-	__STATIC_INLINE void IOCON_SetPinMuxing(IOCON_Type *base,
-			const iocon_group_t *pinArray, uint32_t arrayLength) {
-		uint32_t i;
+/**
+ * @brief   Set all I/O Control pin muxing
+ * @param   base        : The base of IOCON peripheral on the chip
+ * @param   pinArray    : Pointer to array of pin mux selections
+ * @param   arrayLength : Number of entries in pinArray
+ * @return  Nothing
+ */
+__STATIC_INLINE void IOCON_SetPinMuxing(IOCON_Type *base, const iocon_group_t *pinArray, uint32_t arrayLength)
+{
+    uint32_t i;
 
-		for (i = 0; i < arrayLength; i++) {
+    for (i = 0; i < arrayLength; i++)
+    {
 #if (defined(FSL_FEATURE_IOCON_ONE_DIMENSION) && (FSL_FEATURE_IOCON_ONE_DIMENSION == 1))
         IOCON_PinMuxSet(base, pinArray[i].ionumber, pinArray[i].modefunc);
 #else
-			IOCON_PinMuxSet(base, pinArray[i].port, pinArray[i].pin,
-					pinArray[i].modefunc);
+        IOCON_PinMuxSet(base, pinArray[i].port, pinArray[i].pin, pinArray[i].modefunc);
 #endif /* FSL_FEATURE_IOCON_ONE_DIMENSION */
-		}
-	}
+    }
+}
 
-	/* @} */
+/* @} */
 
 #if defined(__cplusplus)
 }

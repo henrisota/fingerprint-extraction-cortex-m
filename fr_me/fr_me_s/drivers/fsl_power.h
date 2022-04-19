@@ -26,136 +26,145 @@
 /*@}*/
 
 /* Power mode configuration API parameter */
-typedef enum _power_mode_config {
-	kPmu_Sleep = 0U,
-	kPmu_Deep_Sleep = 1U,
-	kPmu_PowerDown = 2U,
-	kPmu_Deep_PowerDown = 3U,
+typedef enum _power_mode_config
+{
+    kPmu_Sleep          = 0U,
+    kPmu_Deep_Sleep     = 1U,
+    kPmu_PowerDown      = 2U,
+    kPmu_Deep_PowerDown = 3U,
 } power_mode_cfg_t;
 
 /**
  * @brief Analog components power modes control during low power modes
  */
-typedef enum pd_bits {
-	kPDRUNCFG_PD_DCDC = (1UL << 0),
-	kPDRUNCFG_PD_BIAS = (1UL << 1),
-	kPDRUNCFG_PD_BODCORE = (1UL << 2),
-	kPDRUNCFG_PD_BODVBAT = (1UL << 3),
-	kPDRUNCFG_PD_FRO1M = (1UL << 4),
-	kPDRUNCFG_PD_FRO192M = (1UL << 5),
-	kPDRUNCFG_PD_FRO32K = (1UL << 6),
-	kPDRUNCFG_PD_XTAL32K = (1UL << 7),
-	kPDRUNCFG_PD_XTAL32M = (1UL << 8),
-	kPDRUNCFG_PD_PLL0 = (1UL << 9),
-	kPDRUNCFG_PD_PLL1 = (1UL << 10),
-	kPDRUNCFG_PD_USB0_PHY = (1UL << 11),
-	kPDRUNCFG_PD_USB1_PHY = (1UL << 12),
-	kPDRUNCFG_PD_COMP = (1UL << 13),
-	kPDRUNCFG_PD_TEMPSENS = (1UL << 14),
-	kPDRUNCFG_PD_GPADC = (1UL << 15),
-	kPDRUNCFG_PD_LDOMEM = (1UL << 16),
-	kPDRUNCFG_PD_LDODEEPSLEEP = (1UL << 17),
-	kPDRUNCFG_PD_LDOUSBHS = (1UL << 18),
-	kPDRUNCFG_PD_LDOGPADC = (1UL << 19),
-	kPDRUNCFG_PD_LDOXO32M = (1UL << 20),
-	kPDRUNCFG_PD_LDOFLASHNV = (1UL << 21),
-	kPDRUNCFG_PD_RNG = (1UL << 22),
-	kPDRUNCFG_PD_PLL0_SSCG = (1UL << 23),
-	kPDRUNCFG_PD_ROM = (1UL << 24),
-	/*
-	 This enum member has no practical meaning,it is used to avoid MISRA issue,
-	 user should not trying to use it.
-	 */
-	kPDRUNCFG_ForceUnsigned = 0x80000000U,
+typedef enum pd_bits
+{
+    kPDRUNCFG_PD_DCDC         = (1UL << 0),
+    kPDRUNCFG_PD_BIAS         = (1UL << 1),
+    kPDRUNCFG_PD_BODCORE      = (1UL << 2),
+    kPDRUNCFG_PD_BODVBAT      = (1UL << 3),
+    kPDRUNCFG_PD_FRO1M        = (1UL << 4),
+    kPDRUNCFG_PD_FRO192M      = (1UL << 5),
+    kPDRUNCFG_PD_FRO32K       = (1UL << 6),
+    kPDRUNCFG_PD_XTAL32K      = (1UL << 7),
+    kPDRUNCFG_PD_XTAL32M      = (1UL << 8),
+    kPDRUNCFG_PD_PLL0         = (1UL << 9),
+    kPDRUNCFG_PD_PLL1         = (1UL << 10),
+    kPDRUNCFG_PD_USB0_PHY     = (1UL << 11),
+    kPDRUNCFG_PD_USB1_PHY     = (1UL << 12),
+    kPDRUNCFG_PD_COMP         = (1UL << 13),
+    kPDRUNCFG_PD_TEMPSENS     = (1UL << 14),
+    kPDRUNCFG_PD_GPADC        = (1UL << 15),
+    kPDRUNCFG_PD_LDOMEM       = (1UL << 16),
+    kPDRUNCFG_PD_LDODEEPSLEEP = (1UL << 17),
+    kPDRUNCFG_PD_LDOUSBHS     = (1UL << 18),
+    kPDRUNCFG_PD_LDOGPADC     = (1UL << 19),
+    kPDRUNCFG_PD_LDOXO32M     = (1UL << 20),
+    kPDRUNCFG_PD_LDOFLASHNV   = (1UL << 21),
+    kPDRUNCFG_PD_RNG          = (1UL << 22),
+    kPDRUNCFG_PD_PLL0_SSCG    = (1UL << 23),
+    kPDRUNCFG_PD_ROM          = (1UL << 24),
+    /*
+       This enum member has no practical meaning,it is used to avoid MISRA issue,
+       user should not trying to use it.
+       */
+    kPDRUNCFG_ForceUnsigned = 0x80000000U,
 } pd_bit_t;
 
 /*! @brief BOD VBAT level */
-typedef enum _power_bod_vbat_level {
-	kPOWER_BodVbatLevel1000mv = 0, /*!< Brown out detector VBAT level 1V */
-	kPOWER_BodVbatLevel1100mv = 1, /*!< Brown out detector VBAT level 1.1V */
-	kPOWER_BodVbatLevel1200mv = 2, /*!< Brown out detector VBAT level 1.2V */
-	kPOWER_BodVbatLevel1300mv = 3, /*!< Brown out detector VBAT level 1.3V */
-	kPOWER_BodVbatLevel1400mv = 4, /*!< Brown out detector VBAT level 1.4V */
-	kPOWER_BodVbatLevel1500mv = 5, /*!< Brown out detector VBAT level 1.5V */
-	kPOWER_BodVbatLevel1600mv = 6, /*!< Brown out detector VBAT level 1.6V */
-	kPOWER_BodVbatLevel1650mv = 7, /*!< Brown out detector VBAT level 1.65V */
-	kPOWER_BodVbatLevel1700mv = 8, /*!< Brown out detector VBAT level 1.7V */
-	kPOWER_BodVbatLevel1750mv = 9, /*!< Brown out detector VBAT level 1.75V */
-	kPOWER_BodVbatLevel1800mv = 10, /*!< Brown out detector VBAT level 1.8V */
-	kPOWER_BodVbatLevel1900mv = 11, /*!< Brown out detector VBAT level 1.9V */
-	kPOWER_BodVbatLevel2000mv = 12, /*!< Brown out detector VBAT level 2V */
-	kPOWER_BodVbatLevel2100mv = 13, /*!< Brown out detector VBAT level 2.1V */
-	kPOWER_BodVbatLevel2200mv = 14, /*!< Brown out detector VBAT level 2.2V */
-	kPOWER_BodVbatLevel2300mv = 15, /*!< Brown out detector VBAT level 2.3V */
-	kPOWER_BodVbatLevel2400mv = 16, /*!< Brown out detector VBAT level 2.4V */
-	kPOWER_BodVbatLevel2500mv = 17, /*!< Brown out detector VBAT level 2.5V */
-	kPOWER_BodVbatLevel2600mv = 18, /*!< Brown out detector VBAT level 2.6V */
-	kPOWER_BodVbatLevel2700mv = 19, /*!< Brown out detector VBAT level 2.7V */
-	kPOWER_BodVbatLevel2806mv = 20, /*!< Brown out detector VBAT level 2.806V */
-	kPOWER_BodVbatLevel2900mv = 21, /*!< Brown out detector VBAT level 2.9V */
-	kPOWER_BodVbatLevel3000mv = 22, /*!< Brown out detector VBAT level 3.0V */
-	kPOWER_BodVbatLevel3100mv = 23, /*!< Brown out detector VBAT level 3.1V */
-	kPOWER_BodVbatLevel3200mv = 24, /*!< Brown out detector VBAT level 3.2V */
-	kPOWER_BodVbatLevel3300mv = 25, /*!< Brown out detector VBAT level 3.3V */
+typedef enum _power_bod_vbat_level
+{
+    kPOWER_BodVbatLevel1000mv = 0,  /*!< Brown out detector VBAT level 1V */
+    kPOWER_BodVbatLevel1100mv = 1,  /*!< Brown out detector VBAT level 1.1V */
+    kPOWER_BodVbatLevel1200mv = 2,  /*!< Brown out detector VBAT level 1.2V */
+    kPOWER_BodVbatLevel1300mv = 3,  /*!< Brown out detector VBAT level 1.3V */
+    kPOWER_BodVbatLevel1400mv = 4,  /*!< Brown out detector VBAT level 1.4V */
+    kPOWER_BodVbatLevel1500mv = 5,  /*!< Brown out detector VBAT level 1.5V */
+    kPOWER_BodVbatLevel1600mv = 6,  /*!< Brown out detector VBAT level 1.6V */
+    kPOWER_BodVbatLevel1650mv = 7,  /*!< Brown out detector VBAT level 1.65V */
+    kPOWER_BodVbatLevel1700mv = 8,  /*!< Brown out detector VBAT level 1.7V */
+    kPOWER_BodVbatLevel1750mv = 9,  /*!< Brown out detector VBAT level 1.75V */
+    kPOWER_BodVbatLevel1800mv = 10, /*!< Brown out detector VBAT level 1.8V */
+    kPOWER_BodVbatLevel1900mv = 11, /*!< Brown out detector VBAT level 1.9V */
+    kPOWER_BodVbatLevel2000mv = 12, /*!< Brown out detector VBAT level 2V */
+    kPOWER_BodVbatLevel2100mv = 13, /*!< Brown out detector VBAT level 2.1V */
+    kPOWER_BodVbatLevel2200mv = 14, /*!< Brown out detector VBAT level 2.2V */
+    kPOWER_BodVbatLevel2300mv = 15, /*!< Brown out detector VBAT level 2.3V */
+    kPOWER_BodVbatLevel2400mv = 16, /*!< Brown out detector VBAT level 2.4V */
+    kPOWER_BodVbatLevel2500mv = 17, /*!< Brown out detector VBAT level 2.5V */
+    kPOWER_BodVbatLevel2600mv = 18, /*!< Brown out detector VBAT level 2.6V */
+    kPOWER_BodVbatLevel2700mv = 19, /*!< Brown out detector VBAT level 2.7V */
+    kPOWER_BodVbatLevel2806mv = 20, /*!< Brown out detector VBAT level 2.806V */
+    kPOWER_BodVbatLevel2900mv = 21, /*!< Brown out detector VBAT level 2.9V */
+    kPOWER_BodVbatLevel3000mv = 22, /*!< Brown out detector VBAT level 3.0V */
+    kPOWER_BodVbatLevel3100mv = 23, /*!< Brown out detector VBAT level 3.1V */
+    kPOWER_BodVbatLevel3200mv = 24, /*!< Brown out detector VBAT level 3.2V */
+    kPOWER_BodVbatLevel3300mv = 25, /*!< Brown out detector VBAT level 3.3V */
 } power_bod_vbat_level_t;
 
 /*! @brief BOD Hysteresis control */
-typedef enum _power_bod_hyst {
-	kPOWER_BodHystLevel25mv = 0U, /*!< BOD Hysteresis control level 25mv */
-	kPOWER_BodHystLevel50mv = 1U, /*!< BOD Hysteresis control level 50mv */
-	kPOWER_BodHystLevel75mv = 2U, /*!< BOD Hysteresis control level 75mv */
-	kPOWER_BodHystLevel100mv = 3U, /*!< BOD Hysteresis control level 100mv */
+typedef enum _power_bod_hyst
+{
+    kPOWER_BodHystLevel25mv  = 0U, /*!< BOD Hysteresis control level 25mv */
+    kPOWER_BodHystLevel50mv  = 1U, /*!< BOD Hysteresis control level 50mv */
+    kPOWER_BodHystLevel75mv  = 2U, /*!< BOD Hysteresis control level 75mv */
+    kPOWER_BodHystLevel100mv = 3U, /*!< BOD Hysteresis control level 100mv */
 } power_bod_hyst_t;
 
 /*! @brief BOD core level */
-typedef enum _power_bod_core_level {
-	kPOWER_BodCoreLevel600mv = 0, /*!< Brown out detector core level 600mV */
-	kPOWER_BodCoreLevel650mv = 1, /*!< Brown out detector core level 650mV */
-	kPOWER_BodCoreLevel700mv = 2, /*!< Brown out detector core level 700mV */
-	kPOWER_BodCoreLevel750mv = 3, /*!< Brown out detector core level 750mV */
-	kPOWER_BodCoreLevel800mv = 4, /*!< Brown out detector core level 800mV */
-	kPOWER_BodCoreLevel850mv = 5, /*!< Brown out detector core level 850mV */
-	kPOWER_BodCoreLevel900mv = 6, /*!< Brown out detector core level 900mV */
-	kPOWER_BodCoreLevel950mv = 7, /*!< Brown out detector core level 950mV */
+typedef enum _power_bod_core_level
+{
+    kPOWER_BodCoreLevel600mv = 0, /*!< Brown out detector core level 600mV */
+    kPOWER_BodCoreLevel650mv = 1, /*!< Brown out detector core level 650mV */
+    kPOWER_BodCoreLevel700mv = 2, /*!< Brown out detector core level 700mV */
+    kPOWER_BodCoreLevel750mv = 3, /*!< Brown out detector core level 750mV */
+    kPOWER_BodCoreLevel800mv = 4, /*!< Brown out detector core level 800mV */
+    kPOWER_BodCoreLevel850mv = 5, /*!< Brown out detector core level 850mV */
+    kPOWER_BodCoreLevel900mv = 6, /*!< Brown out detector core level 900mV */
+    kPOWER_BodCoreLevel950mv = 7, /*!< Brown out detector core level 950mV */
 } power_bod_core_level_t;
 
 /**
  * @brief Device Reset Causes
  */
-typedef enum _power_device_reset_cause {
-	kRESET_CAUSE_POR = 0UL, /*!< Power On Reset */
-	kRESET_CAUSE_PADRESET = 1UL, /*!< Hardware Pin Reset */
-	kRESET_CAUSE_BODRESET = 2UL, /*!< Brown-out Detector reset (either BODVBAT or BODCORE) */
-	kRESET_CAUSE_ARMSYSTEMRESET = 3UL, /*!< ARM System Reset */
-	kRESET_CAUSE_WDTRESET = 4UL, /*!< Watchdog Timer Reset */
-	kRESET_CAUSE_SWRRESET = 5UL, /*!< Software Reset */
-	kRESET_CAUSE_CDOGRESET = 6UL, /*!< Code Watchdog Reset */
-	/* Reset causes in DEEP-POWER-DOWN low power mode */
-	kRESET_CAUSE_DPDRESET_WAKEUPIO = 7UL, /*!< Any of the 4 wake-up pins */
-	kRESET_CAUSE_DPDRESET_RTC = 8UL, /*!< Real Time Counter (RTC) */
-	kRESET_CAUSE_DPDRESET_OSTIMER = 9UL, /*!< OS Event Timer (OSTIMER) */
-	kRESET_CAUSE_DPDRESET_WAKEUPIO_RTC = 10UL, /*!< Any of the 4 wake-up pins and RTC (it is not possible to distinguish
-	 which of these 2 events occured first) */
-	kRESET_CAUSE_DPDRESET_WAKEUPIO_OSTIMER = 11UL, /*!< Any of the 4 wake-up pins and OSTIMER (it is not possible to
-	 distinguish which of these 2 events occured first) */
-	kRESET_CAUSE_DPDRESET_RTC_OSTIMER = 12UL, /*!< Real Time Counter or OS Event Timer (it is not possible to
-	 distinguish which of these 2 events occured first) */
-	kRESET_CAUSE_DPDRESET_WAKEUPIO_RTC_OSTIMER = 13UL, /*!< Any of the 4 wake-up pins (it is not possible to distinguish
-	 which of these 3 events occured first) */
-	/* Miscallenous */
-	kRESET_CAUSE_NOT_RELEVANT = 14UL, /*!< No reset cause (for example, this code is used when waking up from DEEP-SLEEP low power mode) */
-	kRESET_CAUSE_NOT_DETERMINISTIC = 15UL, /*!< Unknown Reset Cause. Should be treated like "Hardware Pin Reset" from an
-	 application point of view. */
+typedef enum _power_device_reset_cause
+{
+    kRESET_CAUSE_POR            = 0UL, /*!< Power On Reset */
+    kRESET_CAUSE_PADRESET       = 1UL, /*!< Hardware Pin Reset */
+    kRESET_CAUSE_BODRESET       = 2UL, /*!< Brown-out Detector reset (either BODVBAT or BODCORE) */
+    kRESET_CAUSE_ARMSYSTEMRESET = 3UL, /*!< ARM System Reset */
+    kRESET_CAUSE_WDTRESET       = 4UL, /*!< Watchdog Timer Reset */
+    kRESET_CAUSE_SWRRESET       = 5UL, /*!< Software Reset */
+    kRESET_CAUSE_CDOGRESET      = 6UL, /*!< Code Watchdog Reset */
+    /* Reset causes in DEEP-POWER-DOWN low power mode */
+    kRESET_CAUSE_DPDRESET_WAKEUPIO     = 7UL,  /*!< Any of the 4 wake-up pins */
+    kRESET_CAUSE_DPDRESET_RTC          = 8UL,  /*!< Real Time Counter (RTC) */
+    kRESET_CAUSE_DPDRESET_OSTIMER      = 9UL,  /*!< OS Event Timer (OSTIMER) */
+    kRESET_CAUSE_DPDRESET_WAKEUPIO_RTC = 10UL, /*!< Any of the 4 wake-up pins and RTC (it is not possible to distinguish
+                                                  which of these 2 events occured first) */
+    kRESET_CAUSE_DPDRESET_WAKEUPIO_OSTIMER = 11UL,     /*!< Any of the 4 wake-up pins and OSTIMER (it is not possible to
+                                                          distinguish which of these 2 events occured first) */
+    kRESET_CAUSE_DPDRESET_RTC_OSTIMER = 12UL,          /*!< Real Time Counter or OS Event Timer (it is not possible to
+                                                          distinguish which of these 2 events occured first) */
+    kRESET_CAUSE_DPDRESET_WAKEUPIO_RTC_OSTIMER = 13UL, /*!< Any of the 4 wake-up pins (it is not possible to distinguish
+                                                          which of these 3 events occured first) */
+    /* Miscallenous */
+    kRESET_CAUSE_NOT_RELEVANT =
+        14UL, /*!< No reset cause (for example, this code is used when waking up from DEEP-SLEEP low power mode) */
+    kRESET_CAUSE_NOT_DETERMINISTIC = 15UL, /*!< Unknown Reset Cause. Should be treated like "Hardware Pin Reset" from an
+                                              application point of view. */
 } power_device_reset_cause_t;
 
 /**
  * @brief Device Boot Modes
  */
-typedef enum _power_device_boot_mode {
-	kBOOT_MODE_POWER_UP = 0UL, /*!< All non Low Power Mode wake up (Power On Reset, Pin Reset, BoD Reset, ARM System Reset ... ) */
-	kBOOT_MODE_LP_DEEP_SLEEP = 1UL, /*!< Wake up from DEEP-SLEEP Low Power mode */
-	kBOOT_MODE_LP_POWER_DOWN = 2UL, /*!< Wake up from POWER-DOWN Low Power mode */
-	kBOOT_MODE_LP_DEEP_POWER_DOWN = 4UL, /*!< Wake up from DEEP-POWER-DOWN Low Power mode */
+typedef enum _power_device_boot_mode
+{
+    kBOOT_MODE_POWER_UP =
+        0UL, /*!< All non Low Power Mode wake up (Power On Reset, Pin Reset, BoD Reset, ARM System Reset ... ) */
+    kBOOT_MODE_LP_DEEP_SLEEP      = 1UL, /*!< Wake up from DEEP-SLEEP Low Power mode */
+    kBOOT_MODE_LP_POWER_DOWN      = 2UL, /*!< Wake up from POWER-DOWN Low Power mode */
+    kBOOT_MODE_LP_DEEP_POWER_DOWN = 4UL, /*!< Wake up from DEEP-POWER-DOWN Low Power mode */
 } power_device_boot_mode_t;
 
 /**
@@ -361,9 +370,10 @@ extern "C" {
  * @param en    peripheral for which to enable the PDRUNCFG bit
  * @return none
  */
-static inline void POWER_EnablePD(pd_bit_t en) {
-	/* PDRUNCFGSET */
-	PMC->PDRUNCFGSET0 = (uint32_t) en;
+static inline void POWER_EnablePD(pd_bit_t en)
+{
+    /* PDRUNCFGSET */
+    PMC->PDRUNCFGSET0 = (uint32_t)en;
 }
 
 /*!
@@ -372,9 +382,10 @@ static inline void POWER_EnablePD(pd_bit_t en) {
  * @param en    peripheral for which to disable the PDRUNCFG bit
  * @return none
  */
-static inline void POWER_DisablePD(pd_bit_t en) {
-	/* PDRUNCFGCLR */
-	PMC->PDRUNCFGCLR0 = (uint32_t) en;
+static inline void POWER_DisablePD(pd_bit_t en)
+{
+    /* PDRUNCFGCLR */
+    PMC->PDRUNCFGCLR0 = (uint32_t)en;
 }
 
 /*!
@@ -384,14 +395,12 @@ static inline void POWER_DisablePD(pd_bit_t en) {
  * @param hyst BoD Hysteresis control
  * @param enBodVbatReset VBAT brown out detect reset
  */
-static inline void POWER_SetBodVbatLevel(power_bod_vbat_level_t level,
-		power_bod_hyst_t hyst, bool enBodVbatReset) {
-	PMC->BODVBAT = (PMC->BODVBAT
-			& (~(PMC_BODVBAT_TRIGLVL_MASK | PMC_BODVBAT_HYST_MASK)))
-			| PMC_BODVBAT_TRIGLVL(level) |
-			PMC_BODVBAT_HYST(hyst);
-	PMC->RESETCTRL = (PMC->RESETCTRL & (~PMC_RESETCTRL_BODVBATRESETENABLE_MASK))
-			| PMC_RESETCTRL_BODVBATRESETENABLE(enBodVbatReset);
+static inline void POWER_SetBodVbatLevel(power_bod_vbat_level_t level, power_bod_hyst_t hyst, bool enBodVbatReset)
+{
+    PMC->BODVBAT = (PMC->BODVBAT & (~(PMC_BODVBAT_TRIGLVL_MASK | PMC_BODVBAT_HYST_MASK))) | PMC_BODVBAT_TRIGLVL(level) |
+                   PMC_BODVBAT_HYST(hyst);
+    PMC->RESETCTRL =
+        (PMC->RESETCTRL & (~PMC_RESETCTRL_BODVBATRESETENABLE_MASK)) | PMC_RESETCTRL_BODVBATRESETENABLE(enBodVbatReset);
 }
 
 #if defined(PMC_BODCORE_TRIGLVL_MASK)
@@ -416,8 +425,9 @@ static inline void POWER_SetBodCoreLevel(power_bod_core_level_t level, power_bod
  *
  * @return none
  */
-static inline void POWER_EnableDeepSleep(void) {
-	SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+static inline void POWER_EnableDeepSleep(void)
+{
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
 }
 
 /*!
@@ -425,8 +435,9 @@ static inline void POWER_EnableDeepSleep(void) {
  *
  * @return none
  */
-static inline void POWER_DisableDeepSleep(void) {
-	SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
+static inline void POWER_DisableDeepSleep(void)
+{
+    SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
 }
 
 /**
@@ -458,8 +469,9 @@ void POWER_CycleCpuAndFlash(void);
  reset) reset)
  */
 void POWER_EnterDeepSleep(uint32_t exclude_from_pd,
-		uint32_t sram_retention_ctrl, uint64_t wakeup_interrupts,
-		uint32_t hardware_wake_ctrl);
+                          uint32_t sram_retention_ctrl,
+                          uint64_t wakeup_interrupts,
+                          uint32_t hardware_wake_ctrl);
 
 /**
  * @brief   Configures and enters in POWERDOWN low power mode
@@ -485,8 +497,9 @@ void POWER_EnterDeepSleep(uint32_t exclude_from_pd,
  */
 
 void POWER_EnterPowerDown(uint32_t exclude_from_pd,
-		uint32_t sram_retention_ctrl, uint64_t wakeup_interrupts,
-		uint32_t cpu_retention_ctrl);
+                          uint32_t sram_retention_ctrl,
+                          uint64_t wakeup_interrupts,
+                          uint32_t cpu_retention_ctrl);
 
 /**
  * @brief   Configures and enters in DEEPPOWERDOWN low power mode
@@ -507,8 +520,9 @@ void POWER_EnterPowerDown(uint32_t exclude_from_pd,
  reset)
  */
 void POWER_EnterDeepPowerDown(uint32_t exclude_from_pd,
-		uint32_t sram_retention_ctrl, uint64_t wakeup_interrupts,
-		uint32_t wakeup_io_ctrl);
+                              uint32_t sram_retention_ctrl,
+                              uint64_t wakeup_interrupts,
+                              uint32_t wakeup_io_ctrl);
 
 /**
  * @brief   Configures and enters in SLEEP low power mode
@@ -540,8 +554,8 @@ void POWER_SetVoltageForFreq(uint32_t system_freq_hz);
  *          pi32_32MfXtalNPcbParCappF_x100 PCB -ve parasitic capacitance, pF x 100 : 40
  */
 extern void POWER_Xtal16mhzCapabankTrim(int32_t pi32_16MfXtalIecLoadpF_x100,
-		int32_t pi32_16MfXtalPPcbParCappF_x100,
-		int32_t pi32_16MfXtalNPcbParCappF_x100);
+                                        int32_t pi32_16MfXtalPPcbParCappF_x100,
+                                        int32_t pi32_16MfXtalNPcbParCappF_x100);
 /**
  * @brief   Sets board-specific trim values for 32kHz XTAL
  * @param   pi32_32kfXtalIecLoadpF_x100 Load capacitance, pF x 100. For example, 6pF becomes 600, 1.2pF becomes 120
@@ -557,8 +571,8 @@ extern void POWER_Xtal16mhzCapabankTrim(int32_t pi32_16MfXtalIecLoadpF_x100,
  *          pi32_32kfXtalNPcbParCappF_x100 PCB -ve parasitic capacitance, pF x 100 : 40
  */
 extern void POWER_Xtal32khzCapabankTrim(int32_t pi32_32kfXtalIecLoadpF_x100,
-		int32_t pi32_32kfXtalPPcbParCappF_x100,
-		int32_t pi32_32kfXtalNPcbParCappF_x100);
+                                        int32_t pi32_32kfXtalPPcbParCappF_x100,
+                                        int32_t pi32_32kfXtalNPcbParCappF_x100);
 /**
  * @brief   Enables and sets LDO for 16MHz XTAL
  *
@@ -584,7 +598,8 @@ extern void POWER_SetXtal16mhzLdo(void);
  *
  */
 void POWER_GetWakeUpCause(power_device_reset_cause_t *p_reset_cause,
-		power_device_boot_mode_t *p_boot_mode, uint32_t *p_wakeupio_cause);
+                          power_device_boot_mode_t *p_boot_mode,
+                          uint32_t *p_wakeupio_cause);
 #ifdef __cplusplus
 }
 #endif

@@ -1,28 +1,28 @@
 /*
- ** ###################################################################
- **     Version:             rev. 1.1, 2019-05-16
- **     Build:               b211015
- **
- **     Abstract:
- **         Chip specific module features.
- **
- **     Copyright 2016 Freescale Semiconductor, Inc.
- **     Copyright 2016-2021 NXP
- **     All rights reserved.
- **
- **     SPDX-License-Identifier: BSD-3-Clause
- **
- **     http:                 www.nxp.com
- **     mail:                 support@nxp.com
- **
- **     Revisions:
- **     - rev. 1.0 (2018-08-22)
- **         Initial version based on v0.2UM
- **     - rev. 1.1 (2019-05-16)
- **         Initial A1 version based on v1.3UM
- **
- ** ###################################################################
- */
+** ###################################################################
+**     Version:             rev. 1.1, 2019-05-16
+**     Build:               b211015
+**
+**     Abstract:
+**         Chip specific module features.
+**
+**     Copyright 2016 Freescale Semiconductor, Inc.
+**     Copyright 2016-2021 NXP
+**     All rights reserved.
+**
+**     SPDX-License-Identifier: BSD-3-Clause
+**
+**     http:                 www.nxp.com
+**     mail:                 support@nxp.com
+**
+**     Revisions:
+**     - rev. 1.0 (2018-08-22)
+**         Initial version based on v0.2UM
+**     - rev. 1.1 (2019-05-16)
+**         Initial A1 version based on v1.3UM
+**
+** ###################################################################
+*/
 
 #ifndef _LPC55S69_cm33_core0_FEATURES_H_
 #define _LPC55S69_cm33_core0_FEATURES_H_

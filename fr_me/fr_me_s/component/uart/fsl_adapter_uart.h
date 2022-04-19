@@ -129,23 +129,28 @@ typedef void *hal_uart_handle_t;
 typedef void *hal_uart_dma_handle_t;
 
 /*! @brief UART status */
-typedef enum _hal_uart_status {
-	kStatus_HAL_UartSuccess = kStatus_Success, /*!< Successfully */
-	kStatus_HAL_UartTxBusy = MAKE_STATUS(kStatusGroup_HAL_UART, 1), /*!< TX busy */
-	kStatus_HAL_UartRxBusy = MAKE_STATUS(kStatusGroup_HAL_UART, 2), /*!< RX busy */
-	kStatus_HAL_UartTxIdle = MAKE_STATUS(kStatusGroup_HAL_UART, 3), /*!< HAL UART transmitter is idle. */
-	kStatus_HAL_UartRxIdle = MAKE_STATUS(kStatusGroup_HAL_UART, 4), /*!< HAL UART receiver is idle */
-	kStatus_HAL_UartBaudrateNotSupport = MAKE_STATUS(kStatusGroup_HAL_UART, 5), /*!< Baudrate is not support in current clock source */
-	kStatus_HAL_UartProtocolError = MAKE_STATUS(kStatusGroup_HAL_UART, 6), /*!< Error occurs for Noise, Framing, Parity, etc.
-	 For transactional transfer, The up layer needs to abort the transfer and then starts again */
-	kStatus_HAL_UartError = MAKE_STATUS(kStatusGroup_HAL_UART, 7), /*!< Error occurs on HAL UART */
+typedef enum _hal_uart_status
+{
+    kStatus_HAL_UartSuccess = kStatus_Success,                       /*!< Successfully */
+    kStatus_HAL_UartTxBusy  = MAKE_STATUS(kStatusGroup_HAL_UART, 1), /*!< TX busy */
+    kStatus_HAL_UartRxBusy  = MAKE_STATUS(kStatusGroup_HAL_UART, 2), /*!< RX busy */
+    kStatus_HAL_UartTxIdle  = MAKE_STATUS(kStatusGroup_HAL_UART, 3), /*!< HAL UART transmitter is idle. */
+    kStatus_HAL_UartRxIdle  = MAKE_STATUS(kStatusGroup_HAL_UART, 4), /*!< HAL UART receiver is idle */
+    kStatus_HAL_UartBaudrateNotSupport =
+        MAKE_STATUS(kStatusGroup_HAL_UART, 5), /*!< Baudrate is not support in current clock source */
+    kStatus_HAL_UartProtocolError = MAKE_STATUS(
+        kStatusGroup_HAL_UART,
+        6),                                                        /*!< Error occurs for Noise, Framing, Parity, etc.
+                                                                        For transactional transfer, The up layer needs to abort the transfer and then starts again */
+    kStatus_HAL_UartError = MAKE_STATUS(kStatusGroup_HAL_UART, 7), /*!< Error occurs on HAL UART */
 } hal_uart_status_t;
 
 /*! @brief UART parity mode. */
-typedef enum _hal_uart_parity_mode {
-	kHAL_UartParityDisabled = 0x0U, /*!< Parity disabled */
-	kHAL_UartParityEven = 0x2U, /*!< Parity even enabled */
-	kHAL_UartParityOdd = 0x3U, /*!< Parity odd enabled */
+typedef enum _hal_uart_parity_mode
+{
+    kHAL_UartParityDisabled = 0x0U, /*!< Parity disabled */
+    kHAL_UartParityEven     = 0x2U, /*!< Parity even enabled */
+    kHAL_UartParityOdd      = 0x3U, /*!< Parity odd enabled */
 } hal_uart_parity_mode_t;
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
@@ -158,24 +163,26 @@ typedef enum _hal_uart_block_mode
 #endif /* UART_ADAPTER_NON_BLOCKING_MODE */
 
 /*! @brief UART stop bit count. */
-typedef enum _hal_uart_stop_bit_count {
-	kHAL_UartOneStopBit = 0U, /*!< One stop bit */
-	kHAL_UartTwoStopBit = 1U, /*!< Two stop bits */
+typedef enum _hal_uart_stop_bit_count
+{
+    kHAL_UartOneStopBit = 0U, /*!< One stop bit */
+    kHAL_UartTwoStopBit = 1U, /*!< Two stop bits */
 } hal_uart_stop_bit_count_t;
 
 /*! @brief UART configuration structure. */
-typedef struct _hal_uart_config {
-	uint32_t srcClock_Hz; /*!< Source clock */
-	uint32_t baudRate_Bps; /*!< Baud rate  */
-	hal_uart_parity_mode_t parityMode; /*!< Parity mode, disabled (default), even, odd */
-	hal_uart_stop_bit_count_t stopBitCount; /*!< Number of stop bits, 1 stop bit (default) or 2 stop bits  */
-	uint8_t enableRx; /*!< Enable RX */
-	uint8_t enableTx; /*!< Enable TX */
-	uint8_t enableRxRTS; /*!< Enable RX RTS */
-	uint8_t enableTxCTS; /*!< Enable TX CTS */
-	uint8_t instance; /*!< Instance (0 - UART0, 1 - UART1, ...), detail information please refer to the
-	 SOC corresponding RM.
-	 Invalid instance value will cause initialization failure. */
+typedef struct _hal_uart_config
+{
+    uint32_t srcClock_Hz;                   /*!< Source clock */
+    uint32_t baudRate_Bps;                  /*!< Baud rate  */
+    hal_uart_parity_mode_t parityMode;      /*!< Parity mode, disabled (default), even, odd */
+    hal_uart_stop_bit_count_t stopBitCount; /*!< Number of stop bits, 1 stop bit (default) or 2 stop bits  */
+    uint8_t enableRx;                       /*!< Enable RX */
+    uint8_t enableTx;                       /*!< Enable TX */
+    uint8_t enableRxRTS;                    /*!< Enable RX RTS */
+    uint8_t enableTxCTS;                    /*!< Enable TX CTS */
+    uint8_t instance; /*!< Instance (0 - UART0, 1 - UART1, ...), detail information please refer to the
+                           SOC corresponding RM.
+                           Invalid instance value will cause initialization failure. */
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
     hal_uart_block_mode_t mode; /*!< Uart  block mode */
 #endif                          /* UART_ADAPTER_NON_BLOCKING_MODE */
@@ -234,8 +241,7 @@ typedef struct _hal_uart_dma_config_t
 #endif /* HAL_UART_DMA_ENABLE */
 
 /*! @brief UART transfer callback function. */
-typedef void (*hal_uart_transfer_callback_t)(hal_uart_handle_t handle,
-		hal_uart_status_t status, void *callbackParam);
+typedef void (*hal_uart_transfer_callback_t)(hal_uart_handle_t handle, hal_uart_status_t status, void *callbackParam);
 
 #if (defined(HAL_UART_DMA_ENABLE) && (HAL_UART_DMA_ENABLE > 0U))
 typedef struct _dma_callback_msg
@@ -252,9 +258,10 @@ typedef void (*hal_uart_dma_transfer_callback_t)(hal_uart_dma_handle_t handle,
 #endif /* HAL_UART_DMA_ENABLE */
 
 /*! @brief UART transfer structure. */
-typedef struct _hal_uart_transfer {
-	uint8_t *data; /*!< The buffer of data to be transfer.*/
-	size_t dataSize; /*!< The byte count to be transfer. */
+typedef struct _hal_uart_transfer
+{
+    uint8_t *data;   /*!< The buffer of data to be transfer.*/
+    size_t dataSize; /*!< The byte count to be transfer. */
 } hal_uart_transfer_t;
 
 /*******************************************************************************
@@ -301,8 +308,7 @@ extern "C" {
  * @retval kStatus_HAL_UartBaudrateNotSupport Baudrate is not support in current clock source.
  * @retval kStatus_HAL_UartSuccess UART initialization succeed
  */
-hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle,
-		const hal_uart_config_t *config);
+hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t *config);
 
 /*!
  * @brief Deinitializes a UART instance.
@@ -338,8 +344,7 @@ hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle);
  * @retval kStatus_HAL_UartParityError A parity error occurred while receiving data.
  * @retval kStatus_HAL_UartSuccess Successfully received all data.
  */
-hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle,
-		uint8_t *data, size_t length);
+hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle, uint8_t *data, size_t length);
 
 /*!
  * @brief Writes to the TX register using a blocking method.
@@ -356,8 +361,7 @@ hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle,
  * @param length Size of the data to write.
  * @retval kStatus_HAL_UartSuccess Successfully sent all data.
  */
-hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle,
-		const uint8_t *data, size_t length);
+hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle, const uint8_t *data, size_t length);
 
 /*! @}*/
 

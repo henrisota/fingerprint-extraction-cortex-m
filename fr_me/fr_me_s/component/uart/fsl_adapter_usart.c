@@ -88,7 +88,8 @@ typedef struct _hal_uart_send_state
 } hal_uart_send_state_t;
 #endif
 /*! @brief uart state structure. */
-typedef struct _hal_uart_state {
+typedef struct _hal_uart_state
+{
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
     hal_uart_transfer_callback_t callback;
     void *callbackParam;
@@ -98,7 +99,7 @@ typedef struct _hal_uart_state {
     hal_uart_receive_state_t rx;
     hal_uart_send_state_t tx;
 #endif
-	uint8_t instance;
+    uint8_t instance;
 #if (defined(HAL_UART_DMA_ENABLE) && (HAL_UART_DMA_ENABLE > 0U))
     hal_uart_dma_state_t *dmaHandle;
 #endif /* HAL_UART_DMA_ENABLE */
@@ -163,12 +164,16 @@ static hal_uart_status_t HAL_UartGetStatus(status_t status)
     return uartStatus;
 }
 #else
-static hal_uart_status_t HAL_UartGetStatus(status_t status) {
-	if (kStatus_Success == status) {
-		return kStatus_HAL_UartSuccess;
-	} else {
-		return kStatus_HAL_UartError;
-	}
+static hal_uart_status_t HAL_UartGetStatus(status_t status)
+{
+    if (kStatus_Success == status)
+    {
+        return kStatus_HAL_UartSuccess;
+    }
+    else
+    {
+        return kStatus_HAL_UartError;
+    }
 }
 #endif
 
@@ -264,67 +269,75 @@ static void HAL_UartInterruptHandle_Wapper(void *base, void *handle)
 
 #endif
 
-static hal_uart_status_t HAL_UartInitCommon(hal_uart_handle_t handle,
-		const hal_uart_config_t *config) {
-	usart_config_t usartConfig;
-	status_t status;
+static hal_uart_status_t HAL_UartInitCommon(hal_uart_handle_t handle, const hal_uart_config_t *config)
+{
+    usart_config_t usartConfig;
+    status_t status;
 
-	assert(handle);
-	assert(config);
-	assert(
-			config->instance
-					< (sizeof(s_UsartAdapterBase) / sizeof(USART_Type*)));
-	assert(s_UsartAdapterBase[config->instance]);
-	assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
+    assert(handle);
+    assert(config);
+    assert(config->instance < (sizeof(s_UsartAdapterBase) / sizeof(USART_Type *)));
+    assert(s_UsartAdapterBase[config->instance]);
+    assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
 
-	USART_GetDefaultConfig(&usartConfig);
-	usartConfig.baudRate_Bps = config->baudRate_Bps;
+    USART_GetDefaultConfig(&usartConfig);
+    usartConfig.baudRate_Bps = config->baudRate_Bps;
 
-	if ((0U != config->enableRxRTS) || (0U != config->enableTxCTS)) {
-		usartConfig.enableHardwareFlowControl = true;
-	}
+    if ((0U != config->enableRxRTS) || (0U != config->enableTxCTS))
+    {
+        usartConfig.enableHardwareFlowControl = true;
+    }
 
-	if (kHAL_UartParityEven == config->parityMode) {
-		usartConfig.parityMode = kUSART_ParityEven;
-	} else if (kHAL_UartParityOdd == config->parityMode) {
-		usartConfig.parityMode = kUSART_ParityOdd;
-	} else {
-		usartConfig.parityMode = kUSART_ParityDisabled;
-	}
+    if (kHAL_UartParityEven == config->parityMode)
+    {
+        usartConfig.parityMode = kUSART_ParityEven;
+    }
+    else if (kHAL_UartParityOdd == config->parityMode)
+    {
+        usartConfig.parityMode = kUSART_ParityOdd;
+    }
+    else
+    {
+        usartConfig.parityMode = kUSART_ParityDisabled;
+    }
 
-	if (kHAL_UartTwoStopBit == config->stopBitCount) {
-		usartConfig.stopBitCount = kUSART_TwoStopBit;
-	} else {
-		usartConfig.stopBitCount = kUSART_OneStopBit;
-	}
-	usartConfig.enableRx = (bool) config->enableRx;
-	usartConfig.enableTx = (bool) config->enableTx;
-	usartConfig.txWatermark = kUSART_TxFifo0;
-	usartConfig.rxWatermark = kUSART_RxFifo1;
+    if (kHAL_UartTwoStopBit == config->stopBitCount)
+    {
+        usartConfig.stopBitCount = kUSART_TwoStopBit;
+    }
+    else
+    {
+        usartConfig.stopBitCount = kUSART_OneStopBit;
+    }
+    usartConfig.enableRx    = (bool)config->enableRx;
+    usartConfig.enableTx    = (bool)config->enableTx;
+    usartConfig.txWatermark = kUSART_TxFifo0;
+    usartConfig.rxWatermark = kUSART_RxFifo1;
 
-	status = USART_Init(s_UsartAdapterBase[config->instance], &usartConfig,
-			config->srcClock_Hz);
+    status = USART_Init(s_UsartAdapterBase[config->instance], &usartConfig, config->srcClock_Hz);
 
-	if (kStatus_Success != status) {
-		return HAL_UartGetStatus(status);
-	}
+    if (kStatus_Success != status)
+    {
+        return HAL_UartGetStatus(status);
+    }
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
-hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle,
-		const hal_uart_config_t *config) {
-	hal_uart_state_t *uartHandle;
-	hal_uart_status_t status;
+hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t *config)
+{
+    hal_uart_state_t *uartHandle;
+    hal_uart_status_t status;
 
-	/* Init serial port */
-	status = HAL_UartInitCommon(handle, config);
-	if (kStatus_HAL_UartSuccess != status) {
-		return status;
-	}
+    /* Init serial port */
+    status = HAL_UartInitCommon(handle, config);
+    if (kStatus_HAL_UartSuccess != status)
+    {
+        return status;
+    }
 
-	uartHandle = (hal_uart_state_t*) handle;
-	uartHandle->instance = config->instance;
+    uartHandle           = (hal_uart_state_t *)handle;
+    uartHandle->instance = config->instance;
 #if (defined(HAL_UART_DMA_ENABLE) && (HAL_UART_DMA_ENABLE > 0U))
     uartHandle->dmaHandle = NULL;
 #endif /* HAL_UART_DMA_ENABLE */
@@ -343,30 +356,31 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle,
 
 #endif
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
-hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle) {
-	hal_uart_state_t *uartHandle;
+hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle)
+{
+    hal_uart_state_t *uartHandle;
 
-	assert(handle);
+    assert(handle);
 
-	uartHandle = (hal_uart_state_t*) handle;
+    uartHandle = (hal_uart_state_t *)handle;
 
-	USART_Deinit(s_UsartAdapterBase[uartHandle->instance]);
+    USART_Deinit(s_UsartAdapterBase[uartHandle->instance]);
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
-hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle,
-		uint8_t *data, size_t length) {
-	hal_uart_state_t *uartHandle;
-	status_t status;
-	assert(handle);
-	assert(data);
-	assert(length);
+hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle, uint8_t *data, size_t length)
+{
+    hal_uart_state_t *uartHandle;
+    status_t status;
+    assert(handle);
+    assert(data);
+    assert(length);
 
-	uartHandle = (hal_uart_state_t*) handle;
+    uartHandle = (hal_uart_state_t *)handle;
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
     if (NULL != uartHandle->rx.buffer)
@@ -375,20 +389,19 @@ hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle,
     }
 #endif
 
-	status = USART_ReadBlocking(s_UsartAdapterBase[uartHandle->instance], data,
-			length);
+    status = USART_ReadBlocking(s_UsartAdapterBase[uartHandle->instance], data, length);
 
-	return HAL_UartGetStatus(status);
+    return HAL_UartGetStatus(status);
 }
 
-hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle,
-		const uint8_t *data, size_t length) {
-	hal_uart_state_t *uartHandle;
-	assert(handle);
-	assert(data);
-	assert(length);
+hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle, const uint8_t *data, size_t length)
+{
+    hal_uart_state_t *uartHandle;
+    assert(handle);
+    assert(data);
+    assert(length);
 
-	uartHandle = (hal_uart_state_t*) handle;
+    uartHandle = (hal_uart_state_t *)handle;
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
     if (NULL != uartHandle->tx.buffer)
@@ -397,22 +410,23 @@ hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle,
     }
 #endif
 
-	(void) USART_WriteBlocking(s_UsartAdapterBase[uartHandle->instance], data,
-			length);
+    (void)USART_WriteBlocking(s_UsartAdapterBase[uartHandle->instance], data, length);
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
-hal_uart_status_t HAL_UartEnterLowpower(hal_uart_handle_t handle) {
-	assert(handle);
+hal_uart_status_t HAL_UartEnterLowpower(hal_uart_handle_t handle)
+{
+    assert(handle);
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
-hal_uart_status_t HAL_UartExitLowpower(hal_uart_handle_t handle) {
-	assert(handle);
+hal_uart_status_t HAL_UartExitLowpower(hal_uart_handle_t handle)
+{
+    assert(handle);
 
-	return kStatus_HAL_UartSuccess;
+    return kStatus_HAL_UartSuccess;
 }
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
