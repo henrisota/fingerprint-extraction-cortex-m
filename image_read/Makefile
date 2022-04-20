@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O0 -I.
+CFLAGS = -O0
 DEPENDENCIES = imageio.h
 
 MAINOBJS = main.o imageio.o
