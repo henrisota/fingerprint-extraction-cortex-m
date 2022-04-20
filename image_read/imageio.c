@@ -452,7 +452,7 @@ int flip_image_array(short **image_array, long rows, long cols) {
 
     for (i = rd2; i < rows; ++i) {
         for (j = 0; j < cols; ++j) {
-            temp[rows - 1 - j][j] = image_array[i][j];
+            temp[rows - 1 - i][j] = image_array[i][j];
         }
     }
 
