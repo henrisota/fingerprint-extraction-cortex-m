@@ -34,13 +34,16 @@
 #endif /* HUGE_VAL */
 
 /*! @brief State structure storing debug console. */
-typedef struct DebugConsoleState {
-	uint8_t uartHandleBuffer[HAL_UART_HANDLE_SIZE];
-	hal_uart_status_t (*putChar)(hal_uart_handle_t handle, const uint8_t *data,
-			size_t length); /*!< put char function pointer */
-	hal_uart_status_t (*getChar)(hal_uart_handle_t handle, uint8_t *data,
-			size_t length); /*!< get char function pointer */
-	serial_port_type_t type; /*!< The initialized port of the debug console. */
+typedef struct DebugConsoleState
+{
+    uint8_t uartHandleBuffer[HAL_UART_HANDLE_SIZE];
+    hal_uart_status_t (*putChar)(hal_uart_handle_t handle,
+                                 const uint8_t *data,
+                                 size_t length); /*!< put char function pointer */
+    hal_uart_status_t (*getChar)(hal_uart_handle_t handle,
+                                 uint8_t *data,
+                                 size_t length); /*!< get char function pointer */
+    serial_port_type_t type;                     /*!< The initialized port of the debug console. */
 } debug_console_state_t;
 
 /*! @brief Type of KSDK printf function pointer. */
@@ -63,15 +66,16 @@ enum _debugconsole_printf_flag
 #endif /* PRINTF_ADVANCED_ENABLE */
 
 /*! @brief Specification modifier flags for scanf. */
-enum _debugconsole_scanf_flag {
-	kSCANF_Suppress = 0x2U, /*!< Suppress Flag. */
-	kSCANF_DestMask = 0x7cU, /*!< Destination Mask. */
-	kSCANF_DestChar = 0x4U, /*!< Destination Char Flag. */
-	kSCANF_DestString = 0x8U, /*!< Destination String FLag. */
-	kSCANF_DestSet = 0x10U, /*!< Destination Set Flag. */
-	kSCANF_DestInt = 0x20U, /*!< Destination Int Flag. */
-	kSCANF_DestFloat = 0x30U, /*!< Destination Float Flag. */
-	kSCANF_LengthMask = 0x1f00U, /*!< Length Mask Flag. */
+enum _debugconsole_scanf_flag
+{
+    kSCANF_Suppress   = 0x2U,    /*!< Suppress Flag. */
+    kSCANF_DestMask   = 0x7cU,   /*!< Destination Mask. */
+    kSCANF_DestChar   = 0x4U,    /*!< Destination Char Flag. */
+    kSCANF_DestString = 0x8U,    /*!< Destination String FLag. */
+    kSCANF_DestSet    = 0x10U,   /*!< Destination Set Flag. */
+    kSCANF_DestInt    = 0x20U,   /*!< Destination Int Flag. */
+    kSCANF_DestFloat  = 0x30U,   /*!< Destination Float Flag. */
+    kSCANF_LengthMask = 0x1f00U, /*!< Length Mask Flag. */
 #if SCANF_ADVANCED_ENABLE
     kSCANF_LengthChar        = 0x100U, /*!< Length Char Flag. */
     kSCANF_LengthShortInt    = 0x200U, /*!< Length ShortInt Flag. */
@@ -81,7 +85,7 @@ enum _debugconsole_scanf_flag {
 #if SCANF_FLOAT_ENABLE
     kSCANF_LengthLongLongDouble = 0x1000U, /*!< Length LongLongDuoble Flag. */
 #endif                                     /*SCANF_FLOAT_ENABLE */
-	kSCANF_TypeSinged = 0x2000U, /*!< TypeSinged Flag. */
+    kSCANF_TypeSinged = 0x2000U,           /*!< TypeSinged Flag. */
 };
 
 /*******************************************************************************

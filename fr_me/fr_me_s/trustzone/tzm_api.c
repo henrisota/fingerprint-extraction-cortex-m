@@ -29,18 +29,19 @@ typedef void (*funcptr_ns)(void) TZM_IS_NONSECURE_CALLED;
 /*!
  * @brief This function jumps to normal world.
  */
-void TZM_JumpToNormalWorld(uint32_t nonsecVtorAddress) {
-	funcptr_ns ResetHandler_ns;
+void TZM_JumpToNormalWorld(uint32_t nonsecVtorAddress)
+{
+    funcptr_ns ResetHandler_ns;
 
-	/* Set non-secure main stack (MSP_NS) */
-	__TZ_set_MSP_NS(*((uint32_t*) (nonsecVtorAddress)));
+    /* Set non-secure main stack (MSP_NS) */
+    __TZ_set_MSP_NS(*((uint32_t *)(nonsecVtorAddress)));
 
-	/* Set non-secure vector table */
-	SCB_NS->VTOR = nonsecVtorAddress;
+    /* Set non-secure vector table */
+    SCB_NS->VTOR = nonsecVtorAddress;
 
-	/* Get non-secure reset handler */
-	ResetHandler_ns = (funcptr_ns) (*((uint32_t*) ((nonsecVtorAddress) + 4U)));
+    /* Get non-secure reset handler */
+    ResetHandler_ns = (funcptr_ns)(*((uint32_t *)((nonsecVtorAddress) + 4U)));
 
-	/* Call non-secure application - jump to normal world */
-	ResetHandler_ns();
+    /* Call non-secure application - jump to normal world */
+    ResetHandler_ns();
 }

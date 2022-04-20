@@ -1,0 +1,7 @@
+ExitOnError 1
+r
+h
+loadfile "/home/dante/Documents/git/fingerprint-extraction-cortex-m/fr_me/fr_me_ns/Debug/fr_me_ns.hex" 0x10000 
+qc
+
+qc

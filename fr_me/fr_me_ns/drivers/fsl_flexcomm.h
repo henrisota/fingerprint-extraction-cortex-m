@@ -22,13 +22,14 @@
 /*@}*/
 
 /*! @brief FLEXCOMM peripheral modes. */
-typedef enum {
-	FLEXCOMM_PERIPH_NONE, /*!< No peripheral */
-	FLEXCOMM_PERIPH_USART, /*!< USART peripheral */
-	FLEXCOMM_PERIPH_SPI, /*!< SPI Peripheral */
-	FLEXCOMM_PERIPH_I2C, /*!< I2C Peripheral */
-	FLEXCOMM_PERIPH_I2S_TX, /*!< I2S TX Peripheral */
-	FLEXCOMM_PERIPH_I2S_RX, /*!< I2S RX Peripheral */
+typedef enum
+{
+    FLEXCOMM_PERIPH_NONE,   /*!< No peripheral */
+    FLEXCOMM_PERIPH_USART,  /*!< USART peripheral */
+    FLEXCOMM_PERIPH_SPI,    /*!< SPI Peripheral */
+    FLEXCOMM_PERIPH_I2C,    /*!< I2C Peripheral */
+    FLEXCOMM_PERIPH_I2S_TX, /*!< I2S TX Peripheral */
+    FLEXCOMM_PERIPH_I2S_RX, /*!< I2S RX Peripheral */
 } FLEXCOMM_PERIPH_T;
 
 /*! @brief Typedef for interrupt handler. */
@@ -52,8 +53,7 @@ status_t FLEXCOMM_Init(void *base, FLEXCOMM_PERIPH_T periph);
 
 /*! @brief Sets IRQ handler for given FLEXCOMM module. It is used by drivers register IRQ handler according to FLEXCOMM
  * mode */
-void FLEXCOMM_SetIRQHandler(void *base, flexcomm_irq_handler_t handler,
-		void *flexcommHandle);
+void FLEXCOMM_SetIRQHandler(void *base, flexcomm_irq_handler_t handler, void *flexcommHandle);
 
 #if defined(__cplusplus)
 }

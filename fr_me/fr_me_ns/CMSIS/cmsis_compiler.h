@@ -51,7 +51,8 @@
  * GNU Compiler
  */
 #elif defined ( __GNUC__ )
-#include "cmsis_gcc.h"
+  #include "cmsis_gcc.h"
+
 
 /*
  * IAR Compiler
@@ -276,6 +277,7 @@
 #else
   #error Unknown compiler.
 #endif
+
 
 #endif /* __CMSIS_COMPILER_H */
 

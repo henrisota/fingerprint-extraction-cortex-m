@@ -3,7 +3,7 @@
 	<name>fr_me_ns</name>
 	<comment></comment>
 	<projects>
-		<project>fr_me_hello_world_s</project>
+		<project>fr_me_s</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

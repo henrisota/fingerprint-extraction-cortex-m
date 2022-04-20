@@ -47,6 +47,7 @@ void BOARD_InitBootClocks(void);
  ******************************************************************************/
 #define BOARD_BOOTCLOCKFRO12M_CORE_CLOCK           12000000U  /*!< Core clock frequency: 12000000Hz */
 
+
 /*******************************************************************************
  * API for BOARD_BootClockFRO12M configuration
  ******************************************************************************/
@@ -71,6 +72,7 @@ void BOARD_BootClockFRO12M(void);
  * Definitions for BOARD_BootClockFROHF96M configuration
  ******************************************************************************/
 #define BOARD_BOOTCLOCKFROHF96M_CORE_CLOCK         96000000U  /*!< Core clock frequency: 96000000Hz */
+
 
 /*******************************************************************************
  * API for BOARD_BootClockFROHF96M configuration
@@ -97,6 +99,7 @@ void BOARD_BootClockFROHF96M(void);
  ******************************************************************************/
 #define BOARD_BOOTCLOCKPLL100M_CORE_CLOCK         100000000U  /*!< Core clock frequency: 100000000Hz */
 
+
 /*******************************************************************************
  * API for BOARD_BootClockPLL100M configuration
  ******************************************************************************/
@@ -122,6 +125,7 @@ void BOARD_BootClockPLL100M(void);
  ******************************************************************************/
 #define BOARD_BOOTCLOCKPLL150M_CORE_CLOCK         150000000U  /*!< Core clock frequency: 150000000Hz */
 
+
 /*******************************************************************************
  * API for BOARD_BootClockPLL150M configuration
  ******************************************************************************/
@@ -146,6 +150,7 @@ void BOARD_BootClockPLL150M(void);
  * Definitions for BOARD_BootClockPLL1_150M configuration
  ******************************************************************************/
 #define BOARD_BOOTCLOCKPLL1_150M_CORE_CLOCK       150000000U  /*!< Core clock frequency: 150000000Hz */
+
 
 /*******************************************************************************
  * API for BOARD_BootClockPLL1_150M configuration

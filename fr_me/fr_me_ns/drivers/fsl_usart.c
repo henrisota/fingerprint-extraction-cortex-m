@@ -22,16 +22,18 @@
 /*!
  * @brief Used for conversion from `flexcomm_usart_irq_handler_t` to `flexcomm_irq_handler_t`
  */
-typedef union usart_to_flexcomm {
-	flexcomm_usart_irq_handler_t usart_master_handler;
-	flexcomm_irq_handler_t flexcomm_handler;
+typedef union usart_to_flexcomm
+{
+    flexcomm_usart_irq_handler_t usart_master_handler;
+    flexcomm_irq_handler_t flexcomm_handler;
 } usart_to_flexcomm_t;
 
-enum {
-	kUSART_TxIdle, /* TX idle. */
-	kUSART_TxBusy, /* TX busy. */
-	kUSART_RxIdle, /* RX idle. */
-	kUSART_RxBusy /* RX busy. */
+enum
+{
+    kUSART_TxIdle, /* TX idle. */
+    kUSART_TxBusy, /* TX busy. */
+    kUSART_RxIdle, /* RX idle. */
+    kUSART_RxBusy  /* RX busy. */
 };
 
 /*******************************************************************************
@@ -42,8 +44,7 @@ enum {
 static const IRQn_Type s_usartIRQ[] = USART_IRQS;
 
 /*! @brief Array to map USART instance number to base address. */
-static const uint32_t s_usartBaseAddrs[FSL_FEATURE_SOC_USART_COUNT] =
-		USART_BASE_ADDRS;
+static const uint32_t s_usartBaseAddrs[FSL_FEATURE_SOC_USART_COUNT] = USART_BASE_ADDRS;
 
 /*******************************************************************************
  * Code
@@ -51,17 +52,20 @@ static const uint32_t s_usartBaseAddrs[FSL_FEATURE_SOC_USART_COUNT] =
 
 /* Get the index corresponding to the USART */
 /*! brief Returns instance number for USART peripheral base address. */
-uint32_t USART_GetInstance(USART_Type *base) {
-	uint32_t i;
+uint32_t USART_GetInstance(USART_Type *base)
+{
+    uint32_t i;
 
-	for (i = 0; i < (uint32_t) FSL_FEATURE_SOC_USART_COUNT; i++) {
-		if ((uint32_t) base == s_usartBaseAddrs[i]) {
-			break;
-		}
-	}
+    for (i = 0; i < (uint32_t)FSL_FEATURE_SOC_USART_COUNT; i++)
+    {
+        if ((uint32_t)base == s_usartBaseAddrs[i])
+        {
+            break;
+        }
+    }
 
-	assert(i < (uint32_t)FSL_FEATURE_SOC_USART_COUNT);
-	return i;
+    assert(i < (uint32_t)FSL_FEATURE_SOC_USART_COUNT);
+    return i;
 }
 
 /*!
@@ -70,36 +74,42 @@ uint32_t USART_GetInstance(USART_Type *base) {
  * param handle USART handle pointer.
  * return Length of received data in RX ring buffer.
  */
-size_t USART_TransferGetRxRingBufferLength(usart_handle_t *handle) {
-	size_t size;
+size_t USART_TransferGetRxRingBufferLength(usart_handle_t *handle)
+{
+    size_t size;
 
-	/* Check arguments */
-	assert(NULL != handle);
-	uint16_t rxRingBufferHead = handle->rxRingBufferHead;
-	uint16_t rxRingBufferTail = handle->rxRingBufferTail;
+    /* Check arguments */
+    assert(NULL != handle);
+    uint16_t rxRingBufferHead = handle->rxRingBufferHead;
+    uint16_t rxRingBufferTail = handle->rxRingBufferTail;
 
-	if (rxRingBufferTail > rxRingBufferHead) {
-		size = (size_t) rxRingBufferHead + handle->rxRingBufferSize
-				- (size_t) rxRingBufferTail;
-	} else {
-		size = (size_t) rxRingBufferHead - (size_t) rxRingBufferTail;
-	}
-	return size;
+    if (rxRingBufferTail > rxRingBufferHead)
+    {
+        size = (size_t)rxRingBufferHead + handle->rxRingBufferSize - (size_t)rxRingBufferTail;
+    }
+    else
+    {
+        size = (size_t)rxRingBufferHead - (size_t)rxRingBufferTail;
+    }
+    return size;
 }
 
-static bool USART_TransferIsRxRingBufferFull(usart_handle_t *handle) {
-	bool full;
+static bool USART_TransferIsRxRingBufferFull(usart_handle_t *handle)
+{
+    bool full;
 
-	/* Check arguments */
-	assert(NULL != handle);
+    /* Check arguments */
+    assert(NULL != handle);
 
-	if (USART_TransferGetRxRingBufferLength(handle)
-			== (handle->rxRingBufferSize - 1U)) {
-		full = true;
-	} else {
-		full = false;
-	}
-	return full;
+    if (USART_TransferGetRxRingBufferLength(handle) == (handle->rxRingBufferSize - 1U))
+    {
+        full = true;
+    }
+    else
+    {
+        full = false;
+    }
+    return full;
 }
 
 /*!
@@ -119,21 +129,20 @@ static bool USART_TransferIsRxRingBufferFull(usart_handle_t *handle) {
  * param ringBuffer Start address of the ring buffer for background receiving. Pass NULL to disable the ring buffer.
  * param ringBufferSize size of the ring buffer.
  */
-void USART_TransferStartRingBuffer(USART_Type *base, usart_handle_t *handle,
-		uint8_t *ringBuffer, size_t ringBufferSize) {
-	/* Check arguments */
-	assert(NULL != base);
-	assert(NULL != handle);
-	assert(NULL != ringBuffer);
+void USART_TransferStartRingBuffer(USART_Type *base, usart_handle_t *handle, uint8_t *ringBuffer, size_t ringBufferSize)
+{
+    /* Check arguments */
+    assert(NULL != base);
+    assert(NULL != handle);
+    assert(NULL != ringBuffer);
 
-	/* Setup the ringbuffer address */
-	handle->rxRingBuffer = ringBuffer;
-	handle->rxRingBufferSize = ringBufferSize;
-	handle->rxRingBufferHead = 0U;
-	handle->rxRingBufferTail = 0U;
-	/* ring buffer is ready we can start receiving data */
-	base->FIFOINTENSET = USART_FIFOINTENSET_RXLVL_MASK
-			| USART_FIFOINTENSET_RXERR_MASK;
+    /* Setup the ringbuffer address */
+    handle->rxRingBuffer     = ringBuffer;
+    handle->rxRingBufferSize = ringBufferSize;
+    handle->rxRingBufferHead = 0U;
+    handle->rxRingBufferTail = 0U;
+    /* ring buffer is ready we can start receiving data */
+    base->FIFOINTENSET = USART_FIFOINTENSET_RXLVL_MASK | USART_FIFOINTENSET_RXERR_MASK;
 }
 
 /*!
@@ -144,19 +153,20 @@ void USART_TransferStartRingBuffer(USART_Type *base, usart_handle_t *handle,
  * param base USART peripheral base address.
  * param handle USART handle pointer.
  */
-void USART_TransferStopRingBuffer(USART_Type *base, usart_handle_t *handle) {
-	/* Check arguments */
-	assert(NULL != base);
-	assert(NULL != handle);
+void USART_TransferStopRingBuffer(USART_Type *base, usart_handle_t *handle)
+{
+    /* Check arguments */
+    assert(NULL != base);
+    assert(NULL != handle);
 
-	if (handle->rxState == (uint8_t) kUSART_RxIdle) {
-		base->FIFOINTENCLR = USART_FIFOINTENCLR_RXLVL_MASK
-				| USART_FIFOINTENCLR_RXERR_MASK;
-	}
-	handle->rxRingBuffer = NULL;
-	handle->rxRingBufferSize = 0U;
-	handle->rxRingBufferHead = 0U;
-	handle->rxRingBufferTail = 0U;
+    if (handle->rxState == (uint8_t)kUSART_RxIdle)
+    {
+        base->FIFOINTENCLR = USART_FIFOINTENCLR_RXLVL_MASK | USART_FIFOINTENCLR_RXERR_MASK;
+    }
+    handle->rxRingBuffer     = NULL;
+    handle->rxRingBufferSize = 0U;
+    handle->rxRingBufferHead = 0U;
+    handle->rxRingBufferTail = 0U;
 }
 
 /*!
@@ -180,69 +190,76 @@ void USART_TransferStopRingBuffer(USART_Type *base, usart_handle_t *handle) {
  * retval kStatus_InvalidArgument USART base address is not valid
  * retval kStatus_Success Status USART initialize succeed
  */
-status_t USART_Init(USART_Type *base, const usart_config_t *config,
-		uint32_t srcClock_Hz) {
-	int result;
+status_t USART_Init(USART_Type *base, const usart_config_t *config, uint32_t srcClock_Hz)
+{
+    int result;
 
-	/* check arguments */
-	assert(!((NULL == base) || (NULL == config) || (0U == srcClock_Hz)));
-	if ((NULL == base) || (NULL == config) || (0U == srcClock_Hz)) {
-		return kStatus_InvalidArgument;
-	}
+    /* check arguments */
+    assert(!((NULL == base) || (NULL == config) || (0U == srcClock_Hz)));
+    if ((NULL == base) || (NULL == config) || (0U == srcClock_Hz))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	/* initialize flexcomm to USART mode */
-	result = FLEXCOMM_Init(base, FLEXCOMM_PERIPH_USART);
-	if (kStatus_Success != result) {
-		return result;
-	}
+    /* initialize flexcomm to USART mode */
+    result = FLEXCOMM_Init(base, FLEXCOMM_PERIPH_USART);
+    if (kStatus_Success != result)
+    {
+        return result;
+    }
 
-	if (config->enableTx) {
-		/* empty and enable txFIFO */
-		base->FIFOCFG |= USART_FIFOCFG_EMPTYTX_MASK
-				| USART_FIFOCFG_ENABLETX_MASK;
-		/* setup trigger level */
-		base->FIFOTRIG &= ~(USART_FIFOTRIG_TXLVL_MASK);
-		base->FIFOTRIG |= USART_FIFOTRIG_TXLVL(config->txWatermark);
-		/* enable trigger interrupt */
-		base->FIFOTRIG |= USART_FIFOTRIG_TXLVLENA_MASK;
-	}
+    if (config->enableTx)
+    {
+        /* empty and enable txFIFO */
+        base->FIFOCFG |= USART_FIFOCFG_EMPTYTX_MASK | USART_FIFOCFG_ENABLETX_MASK;
+        /* setup trigger level */
+        base->FIFOTRIG &= ~(USART_FIFOTRIG_TXLVL_MASK);
+        base->FIFOTRIG |= USART_FIFOTRIG_TXLVL(config->txWatermark);
+        /* enable trigger interrupt */
+        base->FIFOTRIG |= USART_FIFOTRIG_TXLVLENA_MASK;
+    }
 
-	/* empty and enable rxFIFO */
-	if (config->enableRx) {
-		base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK
-				| USART_FIFOCFG_ENABLERX_MASK;
-		/* setup trigger level */
-		base->FIFOTRIG &= ~(USART_FIFOTRIG_RXLVL_MASK);
-		base->FIFOTRIG |= USART_FIFOTRIG_RXLVL(config->rxWatermark);
-		/* enable trigger interrupt */
-		base->FIFOTRIG |= USART_FIFOTRIG_RXLVLENA_MASK;
-	}
-	/* setup configuration and enable USART */
-	base->CFG =
-			USART_CFG_PARITYSEL(
-					config->parityMode) | USART_CFG_STOPLEN(config->stopBitCount) |
-					USART_CFG_DATALEN(config->bitCountPerChar) | USART_CFG_LOOP(config->loopback) |
-					USART_CFG_SYNCEN((uint32_t)config->syncMode >> 1) | USART_CFG_SYNCMST((uint8_t)config->syncMode) |
-					USART_CFG_CLKPOL(config->clockPolarity) | USART_CFG_MODE32K(config->enableMode32k) |
-					USART_CFG_CTSEN(config->enableHardwareFlowControl) | USART_CFG_ENABLE_MASK;
+    /* empty and enable rxFIFO */
+    if (config->enableRx)
+    {
+        base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK | USART_FIFOCFG_ENABLERX_MASK;
+        /* setup trigger level */
+        base->FIFOTRIG &= ~(USART_FIFOTRIG_RXLVL_MASK);
+        base->FIFOTRIG |= USART_FIFOTRIG_RXLVL(config->rxWatermark);
+        /* enable trigger interrupt */
+        base->FIFOTRIG |= USART_FIFOTRIG_RXLVLENA_MASK;
+    }
+    /* setup configuration and enable USART */
+    base->CFG = USART_CFG_PARITYSEL(config->parityMode) | USART_CFG_STOPLEN(config->stopBitCount) |
+                USART_CFG_DATALEN(config->bitCountPerChar) | USART_CFG_LOOP(config->loopback) |
+                USART_CFG_SYNCEN((uint32_t)config->syncMode >> 1) | USART_CFG_SYNCMST((uint8_t)config->syncMode) |
+                USART_CFG_CLKPOL(config->clockPolarity) | USART_CFG_MODE32K(config->enableMode32k) |
+                USART_CFG_CTSEN(config->enableHardwareFlowControl) | USART_CFG_ENABLE_MASK;
 
-	/* Setup baudrate */
-	if (config->enableMode32k) {
-		if ((9600U % config->baudRate_Bps) == 0U) {
-			base->BRG = 9600U / config->baudRate_Bps;
-		} else {
-			return kStatus_USART_BaudrateNotSupport;
-		}
-	} else {
-		result = USART_SetBaudRate(base, config->baudRate_Bps, srcClock_Hz);
-		if (kStatus_Success != result) {
-			return result;
-		}
-	}
-	/* Setting continuous Clock configuration. used for synchronous mode. */
-	USART_EnableContinuousSCLK(base, config->enableContinuousSCLK);
+    /* Setup baudrate */
+    if (config->enableMode32k)
+    {
+        if ((9600U % config->baudRate_Bps) == 0U)
+        {
+            base->BRG = 9600U / config->baudRate_Bps;
+        }
+        else
+        {
+            return kStatus_USART_BaudrateNotSupport;
+        }
+    }
+    else
+    {
+        result = USART_SetBaudRate(base, config->baudRate_Bps, srcClock_Hz);
+        if (kStatus_Success != result)
+        {
+            return result;
+        }
+    }
+    /* Setting continuous Clock configuration. used for synchronous mode. */
+    USART_EnableContinuousSCLK(base, config->enableContinuousSCLK);
 
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -252,17 +269,18 @@ status_t USART_Init(USART_Type *base, const usart_config_t *config,
  *
  * param base USART peripheral base address.
  */
-void USART_Deinit(USART_Type *base) {
-	/* Check arguments */
-	assert(NULL != base);
-	while (0U == (base->STAT & USART_STAT_TXIDLE_MASK)) {
-	}
-	/* Disable interrupts, disable dma requests, disable peripheral */
-	base->FIFOINTENCLR = USART_FIFOINTENCLR_TXERR_MASK
-			| USART_FIFOINTENCLR_RXERR_MASK | USART_FIFOINTENCLR_TXLVL_MASK |
-			USART_FIFOINTENCLR_RXLVL_MASK;
-	base->FIFOCFG &= ~(USART_FIFOCFG_DMATX_MASK | USART_FIFOCFG_DMARX_MASK);
-	base->CFG &= ~(USART_CFG_ENABLE_MASK);
+void USART_Deinit(USART_Type *base)
+{
+    /* Check arguments */
+    assert(NULL != base);
+    while (0U == (base->STAT & USART_STAT_TXIDLE_MASK))
+    {
+    }
+    /* Disable interrupts, disable dma requests, disable peripheral */
+    base->FIFOINTENCLR = USART_FIFOINTENCLR_TXERR_MASK | USART_FIFOINTENCLR_RXERR_MASK | USART_FIFOINTENCLR_TXLVL_MASK |
+                         USART_FIFOINTENCLR_RXLVL_MASK;
+    base->FIFOCFG &= ~(USART_FIFOCFG_DMATX_MASK | USART_FIFOCFG_DMARX_MASK);
+    base->CFG &= ~(USART_CFG_ENABLE_MASK);
 }
 
 /*!
@@ -280,28 +298,29 @@ void USART_Deinit(USART_Type *base) {
  *
  * param config Pointer to configuration structure.
  */
-void USART_GetDefaultConfig(usart_config_t *config) {
-	/* Check arguments */
-	assert(NULL != config);
+void USART_GetDefaultConfig(usart_config_t *config)
+{
+    /* Check arguments */
+    assert(NULL != config);
 
-	/* Initializes the configure structure to zero. */
-	(void) memset(config, 0, sizeof(*config));
+    /* Initializes the configure structure to zero. */
+    (void)memset(config, 0, sizeof(*config));
 
-	/* Set always all members ! */
-	config->baudRate_Bps = 115200U;
-	config->parityMode = kUSART_ParityDisabled;
-	config->stopBitCount = kUSART_OneStopBit;
-	config->bitCountPerChar = kUSART_8BitsPerChar;
-	config->loopback = false;
-	config->enableRx = false;
-	config->enableTx = false;
-	config->enableMode32k = false;
-	config->txWatermark = kUSART_TxFifo0;
-	config->rxWatermark = kUSART_RxFifo1;
-	config->syncMode = kUSART_SyncModeDisabled;
-	config->enableContinuousSCLK = false;
-	config->clockPolarity = kUSART_RxSampleOnFallingEdge;
-	config->enableHardwareFlowControl = false;
+    /* Set always all members ! */
+    config->baudRate_Bps              = 115200U;
+    config->parityMode                = kUSART_ParityDisabled;
+    config->stopBitCount              = kUSART_OneStopBit;
+    config->bitCountPerChar           = kUSART_8BitsPerChar;
+    config->loopback                  = false;
+    config->enableRx                  = false;
+    config->enableTx                  = false;
+    config->enableMode32k             = false;
+    config->txWatermark               = kUSART_TxFifo0;
+    config->rxWatermark               = kUSART_RxFifo1;
+    config->syncMode                  = kUSART_SyncModeDisabled;
+    config->enableContinuousSCLK      = false;
+    config->clockPolarity             = kUSART_RxSampleOnFallingEdge;
+    config->enableHardwareFlowControl = false;
 }
 
 /*!
@@ -320,64 +339,70 @@ void USART_GetDefaultConfig(usart_config_t *config) {
  * retval kStatus_Success Set baudrate succeed.
  * retval kStatus_InvalidArgument One or more arguments are invalid.
  */
-status_t USART_SetBaudRate(USART_Type *base, uint32_t baudrate_Bps,
-		uint32_t srcClock_Hz) {
-	uint32_t best_diff = (uint32_t) -1, best_osrval = 0xf, best_brgval =
-			(uint32_t) -1;
-	uint32_t osrval, brgval, diff, baudrate;
+status_t USART_SetBaudRate(USART_Type *base, uint32_t baudrate_Bps, uint32_t srcClock_Hz)
+{
+    uint32_t best_diff = (uint32_t)-1, best_osrval = 0xf, best_brgval = (uint32_t)-1;
+    uint32_t osrval, brgval, diff, baudrate;
 
-	/* check arguments */
-	assert(!((NULL == base) || (0U == baudrate_Bps) || (0U == srcClock_Hz)));
-	if ((NULL == base) || (0U == baudrate_Bps) || (0U == srcClock_Hz)) {
-		return kStatus_InvalidArgument;
-	}
+    /* check arguments */
+    assert(!((NULL == base) || (0U == baudrate_Bps) || (0U == srcClock_Hz)));
+    if ((NULL == base) || (0U == baudrate_Bps) || (0U == srcClock_Hz))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	/* If synchronous master mode is enabled, only configure the BRG value. */
-	if ((base->CFG & USART_CFG_SYNCEN_MASK) != 0U) {
-		if ((base->CFG & USART_CFG_SYNCMST_MASK) != 0U) {
-			brgval = srcClock_Hz / baudrate_Bps;
-			base->BRG = brgval - 1U;
-		}
-	} else {
-		/*
-		 * Smaller values of OSR can make the sampling position within a data bit less accurate and may
-		 * potentially cause more noise errors or incorrect data.
-		 */
-		for (osrval = best_osrval; osrval >= 8U; osrval--) {
-			brgval = (((srcClock_Hz * 10U) / ((osrval + 1U) * baudrate_Bps))
-					- 5U) / 10U;
-			if (brgval > 0xFFFFU) {
-				continue;
-			}
-			baudrate = srcClock_Hz / ((osrval + 1U) * (brgval + 1U));
-			diff = (baudrate_Bps < baudrate) ?
-					(baudrate - baudrate_Bps) : (baudrate_Bps - baudrate);
-			if (diff < best_diff) {
-				best_diff = diff;
-				best_osrval = osrval;
-				best_brgval = brgval;
-			}
-		}
+    /* If synchronous master mode is enabled, only configure the BRG value. */
+    if ((base->CFG & USART_CFG_SYNCEN_MASK) != 0U)
+    {
+        if ((base->CFG & USART_CFG_SYNCMST_MASK) != 0U)
+        {
+            brgval    = srcClock_Hz / baudrate_Bps;
+            base->BRG = brgval - 1U;
+        }
+    }
+    else
+    {
+        /*
+         * Smaller values of OSR can make the sampling position within a data bit less accurate and may
+         * potentially cause more noise errors or incorrect data.
+         */
+        for (osrval = best_osrval; osrval >= 8U; osrval--)
+        {
+            brgval = (((srcClock_Hz * 10U) / ((osrval + 1U) * baudrate_Bps)) - 5U) / 10U;
+            if (brgval > 0xFFFFU)
+            {
+                continue;
+            }
+            baudrate = srcClock_Hz / ((osrval + 1U) * (brgval + 1U));
+            diff     = (baudrate_Bps < baudrate) ? (baudrate - baudrate_Bps) : (baudrate_Bps - baudrate);
+            if (diff < best_diff)
+            {
+                best_diff   = diff;
+                best_osrval = osrval;
+                best_brgval = brgval;
+            }
+        }
 
-		/* Check to see if actual baud rate is within 3% of desired baud rate
-		 * based on the best calculated OSR and BRG value */
-		baudrate = srcClock_Hz / ((best_osrval + 1U) * (best_brgval + 1U));
-		diff = (baudrate_Bps < baudrate) ?
-				(baudrate - baudrate_Bps) : (baudrate_Bps - baudrate);
-		if (diff > ((baudrate_Bps / 100U) * 3U)) {
-			return kStatus_USART_BaudrateNotSupport;
-		}
+        /* Check to see if actual baud rate is within 3% of desired baud rate
+         * based on the best calculated OSR and BRG value */
+        baudrate = srcClock_Hz / ((best_osrval + 1U) * (best_brgval + 1U));
+        diff     = (baudrate_Bps < baudrate) ? (baudrate - baudrate_Bps) : (baudrate_Bps - baudrate);
+        if (diff > ((baudrate_Bps / 100U) * 3U))
+        {
+            return kStatus_USART_BaudrateNotSupport;
+        }
 
-		/* value over range */
-		if (best_brgval > 0xFFFFU) {
-			return kStatus_USART_BaudrateNotSupport;
-		}
+        /* value over range */
+        if (best_brgval > 0xFFFFU)
+        {
+            return kStatus_USART_BaudrateNotSupport;
+        }
 
-		base->OSR = best_osrval;
-		base->BRG = best_brgval;
-	}
+        base->OSR = best_osrval;
+        base->BRG = best_brgval;
+    }
 
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -397,26 +422,33 @@ status_t USART_SetBaudRate(USART_Type *base, uint32_t baudrate_Bps,
  * retval kStatus_Success Set baudrate succeed.
  * retval kStatus_InvalidArgument One or more arguments are invalid.
  */
-status_t USART_Enable32kMode(USART_Type *base, uint32_t baudRate_Bps,
-		bool enableMode32k, uint32_t srcClock_Hz) {
-	status_t result = kStatus_Success;
-	base->CFG &= ~(USART_CFG_ENABLE_MASK);
-	if (enableMode32k) {
-		base->CFG |= USART_CFG_MODE32K_MASK;
-		if ((9600U % baudRate_Bps) == 0U) {
-			base->BRG = 9600U / baudRate_Bps - 1U;
-		} else {
-			return kStatus_USART_BaudrateNotSupport;
-		}
-	} else {
-		base->CFG &= ~(USART_CFG_MODE32K_MASK);
-		result = USART_SetBaudRate(base, baudRate_Bps, srcClock_Hz);
-		if (kStatus_Success != result) {
-			return result;
-		}
-	}
-	base->CFG |= USART_CFG_ENABLE_MASK;
-	return result;
+status_t USART_Enable32kMode(USART_Type *base, uint32_t baudRate_Bps, bool enableMode32k, uint32_t srcClock_Hz)
+{
+    status_t result = kStatus_Success;
+    base->CFG &= ~(USART_CFG_ENABLE_MASK);
+    if (enableMode32k)
+    {
+        base->CFG |= USART_CFG_MODE32K_MASK;
+        if ((9600U % baudRate_Bps) == 0U)
+        {
+            base->BRG = 9600U / baudRate_Bps - 1U;
+        }
+        else
+        {
+            return kStatus_USART_BaudrateNotSupport;
+        }
+    }
+    else
+    {
+        base->CFG &= ~(USART_CFG_MODE32K_MASK);
+        result = USART_SetBaudRate(base, baudRate_Bps, srcClock_Hz);
+        if (kStatus_Success != result)
+        {
+            return result;
+        }
+    }
+    base->CFG |= USART_CFG_ENABLE_MASK;
+    return result;
 }
 
 /*!
@@ -427,23 +459,25 @@ status_t USART_Enable32kMode(USART_Type *base, uint32_t baudRate_Bps,
  * param base USART peripheral base address.
  * param enable true to enable, false to disable.
  */
-void USART_Enable9bitMode(USART_Type *base, bool enable) {
-	assert(base != NULL);
+void USART_Enable9bitMode(USART_Type *base, bool enable)
+{
+    assert(base != NULL);
 
-	uint32_t temp = 0U;
+    uint32_t temp = 0U;
 
-	if (enable) {
-		/* Set USART 9-bit mode, disable parity. */
-		temp = base->CFG
-				& ~((uint32_t) USART_CFG_DATALEN_MASK
-						| (uint32_t) USART_CFG_PARITYSEL_MASK);
-		temp |= (uint32_t) USART_CFG_DATALEN(0x2U);
-		base->CFG = temp;
-	} else {
-		/* Set USART to 8-bit mode. */
-		base->CFG &= ~((uint32_t) USART_CFG_DATALEN_MASK);
-		base->CFG |= (uint32_t) USART_CFG_DATALEN(0x1U);
-	}
+    if (enable)
+    {
+        /* Set USART 9-bit mode, disable parity. */
+        temp = base->CFG & ~((uint32_t)USART_CFG_DATALEN_MASK | (uint32_t)USART_CFG_PARITYSEL_MASK);
+        temp |= (uint32_t)USART_CFG_DATALEN(0x2U);
+        base->CFG = temp;
+    }
+    else
+    {
+        /* Set USART to 8-bit mode. */
+        base->CFG &= ~((uint32_t)USART_CFG_DATALEN_MASK);
+        base->CFG |= (uint32_t)USART_CFG_DATALEN(0x1U);
+    }
 }
 
 /*!
@@ -452,9 +486,10 @@ void USART_Enable9bitMode(USART_Type *base, bool enable) {
  * param base USART peripheral base address.
  * param address USART slave address.
  */
-void USART_SendAddress(USART_Type *base, uint8_t address) {
-	assert(base != NULL);
-	base->FIFOWR = ((uint32_t) address | 0x100UL);
+void USART_SendAddress(USART_Type *base, uint8_t address)
+{
+    assert(base != NULL);
+    base->FIFOWR = ((uint32_t)address | 0x100UL);
 }
 
 /*!
@@ -470,55 +505,58 @@ void USART_SendAddress(USART_Type *base, uint8_t address) {
  * retval kStatus_InvalidArgument Invalid argument.
  * retval kStatus_Success Successfully wrote all data.
  */
-status_t USART_WriteBlocking(USART_Type *base, const uint8_t *data,
-		size_t length) {
-	/* Check arguments */
-	assert(!((NULL == base) || (NULL == data)));
+status_t USART_WriteBlocking(USART_Type *base, const uint8_t *data, size_t length)
+{
+    /* Check arguments */
+    assert(!((NULL == base) || (NULL == data)));
 #if UART_RETRY_TIMES
     uint32_t waitTimes;
 #endif
-	if ((NULL == base) || (NULL == data)) {
-		return kStatus_InvalidArgument;
-	}
-	/* Check whether txFIFO is enabled */
-	if (0U == (base->FIFOCFG & USART_FIFOCFG_ENABLETX_MASK)) {
-		return kStatus_InvalidArgument;
-	}
-	for (; length > 0U; length--) {
-		/* Loop until txFIFO get some space for new data */
+    if ((NULL == base) || (NULL == data))
+    {
+        return kStatus_InvalidArgument;
+    }
+    /* Check whether txFIFO is enabled */
+    if (0U == (base->FIFOCFG & USART_FIFOCFG_ENABLETX_MASK))
+    {
+        return kStatus_InvalidArgument;
+    }
+    for (; length > 0U; length--)
+    {
+        /* Loop until txFIFO get some space for new data */
 #if UART_RETRY_TIMES
         waitTimes = UART_RETRY_TIMES;
         while ((0U == (base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK)) && (--waitTimes != 0U))
 #else
-		while (0U == (base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK))
+        while (0U == (base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK))
 #endif
-		{
-		}
+        {
+        }
 #if UART_RETRY_TIMES
         if (0U == waitTimes)
         {
             return kStatus_USART_Timeout;
         }
 #endif
-		base->FIFOWR = *data;
-		data++;
-	}
-	/* Wait to finish transfer */
+        base->FIFOWR = *data;
+        data++;
+    }
+    /* Wait to finish transfer */
 #if UART_RETRY_TIMES
     waitTimes = UART_RETRY_TIMES;
     while ((0U == (base->STAT & USART_STAT_TXIDLE_MASK)) && (--waitTimes != 0U))
 #else
-	while (0U == (base->STAT & USART_STAT_TXIDLE_MASK))
+    while (0U == (base->STAT & USART_STAT_TXIDLE_MASK))
 #endif
-	{
-	}
+    {
+    }
 #if UART_RETRY_TIMES
     if (0U == waitTimes)
     {
         return kStatus_USART_Timeout;
     }
 #endif
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -537,33 +575,37 @@ status_t USART_WriteBlocking(USART_Type *base, const uint8_t *data,
  * retval kStatus_USART_Timeout Transmission timed out and was aborted.
  * retval kStatus_Success Successfully received all data.
  */
-status_t USART_ReadBlocking(USART_Type *base, uint8_t *data, size_t length) {
-	uint32_t statusFlag;
-	status_t status = kStatus_Success;
+status_t USART_ReadBlocking(USART_Type *base, uint8_t *data, size_t length)
+{
+    uint32_t statusFlag;
+    status_t status = kStatus_Success;
 #if UART_RETRY_TIMES
     uint32_t waitTimes;
 #endif
 
-	/* check arguments */
-	assert(!((NULL == base) || (NULL == data)));
-	if ((NULL == base) || (NULL == data)) {
-		return kStatus_InvalidArgument;
-	}
+    /* check arguments */
+    assert(!((NULL == base) || (NULL == data)));
+    if ((NULL == base) || (NULL == data))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	/* Check whether rxFIFO is enabled */
-	if ((base->FIFOCFG & USART_FIFOCFG_ENABLERX_MASK) == 0U) {
-		return kStatus_Fail;
-	}
-	for (; length > 0U; length--) {
-		/* loop until rxFIFO have some data to read */
+    /* Check whether rxFIFO is enabled */
+    if ((base->FIFOCFG & USART_FIFOCFG_ENABLERX_MASK) == 0U)
+    {
+        return kStatus_Fail;
+    }
+    for (; length > 0U; length--)
+    {
+        /* loop until rxFIFO have some data to read */
 #if UART_RETRY_TIMES
         waitTimes = UART_RETRY_TIMES;
         while (((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) == 0U) && (--waitTimes != 0U))
 #else
-		while ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) == 0U)
+        while ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) == 0U)
 #endif
-		{
-		}
+        {
+        }
 #if UART_RETRY_TIMES
         if (waitTimes == 0U)
         {
@@ -571,35 +613,42 @@ status_t USART_ReadBlocking(USART_Type *base, uint8_t *data, size_t length) {
             break;
         }
 #endif
-		/* check rxFIFO statusFlag */
-		if ((base->FIFOSTAT & USART_FIFOSTAT_RXERR_MASK) != 0U) {
-			base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
-			base->FIFOSTAT |= USART_FIFOSTAT_RXERR_MASK;
-			status = kStatus_USART_RxError;
-			break;
-		}
-		/* check receive statusFlag */
-		statusFlag = base->STAT;
-		/* Clear all status flags */
-		base->STAT |= statusFlag;
-		if ((statusFlag & USART_STAT_PARITYERRINT_MASK) != 0U) {
-			status = kStatus_USART_ParityError;
-		}
-		if ((statusFlag & USART_STAT_FRAMERRINT_MASK) != 0U) {
-			status = kStatus_USART_FramingError;
-		}
-		if ((statusFlag & USART_STAT_RXNOISEINT_MASK) != 0U) {
-			status = kStatus_USART_NoiseError;
-		}
+        /* check rxFIFO statusFlag */
+        if ((base->FIFOSTAT & USART_FIFOSTAT_RXERR_MASK) != 0U)
+        {
+            base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
+            base->FIFOSTAT |= USART_FIFOSTAT_RXERR_MASK;
+            status = kStatus_USART_RxError;
+            break;
+        }
+        /* check receive statusFlag */
+        statusFlag = base->STAT;
+        /* Clear all status flags */
+        base->STAT |= statusFlag;
+        if ((statusFlag & USART_STAT_PARITYERRINT_MASK) != 0U)
+        {
+            status = kStatus_USART_ParityError;
+        }
+        if ((statusFlag & USART_STAT_FRAMERRINT_MASK) != 0U)
+        {
+            status = kStatus_USART_FramingError;
+        }
+        if ((statusFlag & USART_STAT_RXNOISEINT_MASK) != 0U)
+        {
+            status = kStatus_USART_NoiseError;
+        }
 
-		if (kStatus_Success == status) {
-			*data = (uint8_t) base->FIFORD;
-			data++;
-		} else {
-			break;
-		}
-	}
-	return status;
+        if (kStatus_Success == status)
+        {
+            *data = (uint8_t)base->FIFORD;
+            data++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return status;
 }
 
 /*!
@@ -614,37 +663,41 @@ status_t USART_ReadBlocking(USART_Type *base, uint8_t *data, size_t length) {
  * param callback The callback function.
  * param userData The parameter of the callback function.
  */
-status_t USART_TransferCreateHandle(USART_Type *base, usart_handle_t *handle,
-		usart_transfer_callback_t callback, void *userData) {
-	/* Check 'base' */
-	assert(!((NULL == base) || (NULL == handle)));
+status_t USART_TransferCreateHandle(USART_Type *base,
+                                    usart_handle_t *handle,
+                                    usart_transfer_callback_t callback,
+                                    void *userData)
+{
+    /* Check 'base' */
+    assert(!((NULL == base) || (NULL == handle)));
 
-	uint32_t instance = 0;
-	usart_to_flexcomm_t handler;
-	handler.usart_master_handler = USART_TransferHandleIRQ;
+    uint32_t instance = 0;
+    usart_to_flexcomm_t handler;
+    handler.usart_master_handler = USART_TransferHandleIRQ;
 
-	if ((NULL == base) || (NULL == handle)) {
-		return kStatus_InvalidArgument;
-	}
+    if ((NULL == base) || (NULL == handle))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	instance = USART_GetInstance(base);
+    instance = USART_GetInstance(base);
 
-	(void) memset(handle, 0, sizeof(*handle));
-	/* Set the TX/RX state. */
-	handle->rxState = (uint8_t) kUSART_RxIdle;
-	handle->txState = (uint8_t) kUSART_TxIdle;
-	/* Set the callback and user data. */
-	handle->callback = callback;
-	handle->userData = userData;
-	handle->rxWatermark = (uint8_t) USART_FIFOTRIG_RXLVL_GET(base);
-	handle->txWatermark = (uint8_t) USART_FIFOTRIG_TXLVL_GET(base);
+    (void)memset(handle, 0, sizeof(*handle));
+    /* Set the TX/RX state. */
+    handle->rxState = (uint8_t)kUSART_RxIdle;
+    handle->txState = (uint8_t)kUSART_TxIdle;
+    /* Set the callback and user data. */
+    handle->callback    = callback;
+    handle->userData    = userData;
+    handle->rxWatermark = (uint8_t)USART_FIFOTRIG_RXLVL_GET(base);
+    handle->txWatermark = (uint8_t)USART_FIFOTRIG_TXLVL_GET(base);
 
-	FLEXCOMM_SetIRQHandler(base, handler.flexcomm_handler, handle);
+    FLEXCOMM_SetIRQHandler(base, handler.flexcomm_handler, handle);
 
-	/* Enable interrupt in NVIC. */
-	(void) EnableIRQ(s_usartIRQ[instance]);
+    /* Enable interrupt in NVIC. */
+    (void)EnableIRQ(s_usartIRQ[instance]);
 
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -662,36 +715,40 @@ status_t USART_TransferCreateHandle(USART_Type *base, usart_handle_t *handle,
  * retval kStatus_USART_TxBusy Previous transmission still not finished, data not all written to TX register yet.
  * retval kStatus_InvalidArgument Invalid argument.
  */
-status_t USART_TransferSendNonBlocking(USART_Type *base, usart_handle_t *handle,
-		usart_transfer_t *xfer) {
-	/* Check arguments */
-	assert(!((NULL == base) || (NULL == handle) || (NULL == xfer)));
-	if ((NULL == base) || (NULL == handle) || (NULL == xfer)) {
-		return kStatus_InvalidArgument;
-	}
-	/* Check xfer members */
-	assert(!((0U == xfer->dataSize) || (NULL == xfer->txData)));
-	if ((0U == xfer->dataSize) || (NULL == xfer->txData)) {
-		return kStatus_InvalidArgument;
-	}
+status_t USART_TransferSendNonBlocking(USART_Type *base, usart_handle_t *handle, usart_transfer_t *xfer)
+{
+    /* Check arguments */
+    assert(!((NULL == base) || (NULL == handle) || (NULL == xfer)));
+    if ((NULL == base) || (NULL == handle) || (NULL == xfer))
+    {
+        return kStatus_InvalidArgument;
+    }
+    /* Check xfer members */
+    assert(!((0U == xfer->dataSize) || (NULL == xfer->txData)));
+    if ((0U == xfer->dataSize) || (NULL == xfer->txData))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	/* Return error if current TX busy. */
-	if ((uint8_t) kUSART_TxBusy == handle->txState) {
-		return kStatus_USART_TxBusy;
-	} else {
-		/* Disable IRQ when configuring transfer handle, in case interrupt occurs during the process and messes up the
-		 * handle value. */
-		uint32_t interruptMask = USART_GetEnabledInterrupts(base);
-		USART_DisableInterrupts(base, interruptMask);
-		handle->txData = xfer->txData;
-		handle->txDataSize = xfer->dataSize;
-		handle->txDataSizeAll = xfer->dataSize;
-		handle->txState = (uint8_t) kUSART_TxBusy;
-		/* Enable transmiter interrupt and the previously disabled interrupt. */
-		USART_EnableInterrupts(base,
-				interruptMask | (uint32_t) kUSART_TxLevelInterruptEnable);
-	}
-	return kStatus_Success;
+    /* Return error if current TX busy. */
+    if ((uint8_t)kUSART_TxBusy == handle->txState)
+    {
+        return kStatus_USART_TxBusy;
+    }
+    else
+    {
+        /* Disable IRQ when configuring transfer handle, in case interrupt occurs during the process and messes up the
+         * handle value. */
+        uint32_t interruptMask = USART_GetEnabledInterrupts(base);
+        USART_DisableInterrupts(base, interruptMask);
+        handle->txData        = xfer->txData;
+        handle->txDataSize    = xfer->dataSize;
+        handle->txDataSizeAll = xfer->dataSize;
+        handle->txState       = (uint8_t)kUSART_TxBusy;
+        /* Enable transmiter interrupt and the previously disabled interrupt. */
+        USART_EnableInterrupts(base, interruptMask | (uint32_t)kUSART_TxLevelInterruptEnable);
+    }
+    return kStatus_Success;
 }
 
 /*!
@@ -703,16 +760,17 @@ status_t USART_TransferSendNonBlocking(USART_Type *base, usart_handle_t *handle,
  * param base USART peripheral base address.
  * param handle USART handle pointer.
  */
-void USART_TransferAbortSend(USART_Type *base, usart_handle_t *handle) {
-	assert(NULL != handle);
+void USART_TransferAbortSend(USART_Type *base, usart_handle_t *handle)
+{
+    assert(NULL != handle);
 
-	/* Disable interrupts */
-	USART_DisableInterrupts(base, (uint32_t) kUSART_TxLevelInterruptEnable);
-	/* Empty txFIFO */
-	base->FIFOCFG |= USART_FIFOCFG_EMPTYTX_MASK;
+    /* Disable interrupts */
+    USART_DisableInterrupts(base, (uint32_t)kUSART_TxLevelInterruptEnable);
+    /* Empty txFIFO */
+    base->FIFOCFG |= USART_FIFOCFG_EMPTYTX_MASK;
 
-	handle->txDataSize = 0U;
-	handle->txState = (uint8_t) kUSART_TxIdle;
+    handle->txDataSize = 0U;
+    handle->txState    = (uint8_t)kUSART_TxIdle;
 }
 
 /*!
@@ -727,20 +785,20 @@ void USART_TransferAbortSend(USART_Type *base, usart_handle_t *handle) {
  * retval kStatus_InvalidArgument Parameter is invalid.
  * retval kStatus_Success Get successfully through the parameter \p count;
  */
-status_t USART_TransferGetSendCount(USART_Type *base, usart_handle_t *handle,
-		uint32_t *count) {
-	assert(NULL != handle);
-	assert(NULL != count);
+status_t USART_TransferGetSendCount(USART_Type *base, usart_handle_t *handle, uint32_t *count)
+{
+    assert(NULL != handle);
+    assert(NULL != count);
 
-	if ((uint8_t) kUSART_TxIdle == handle->txState) {
-		return kStatus_NoTransferInProgress;
-	}
+    if ((uint8_t)kUSART_TxIdle == handle->txState)
+    {
+        return kStatus_NoTransferInProgress;
+    }
 
-	*count = handle->txDataSizeAll - handle->txDataSize
-			- ((base->FIFOSTAT & USART_FIFOSTAT_TXLVL_MASK)
-					>> USART_FIFOSTAT_TXLVL_SHIFT);
+    *count = handle->txDataSizeAll - handle->txDataSize -
+             ((base->FIFOSTAT & USART_FIFOSTAT_TXLVL_MASK) >> USART_FIFOSTAT_TXLVL_SHIFT);
 
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -770,110 +828,127 @@ status_t USART_TransferGetSendCount(USART_Type *base, usart_handle_t *handle,
  * retval kStatus_InvalidArgument Invalid argument.
  */
 status_t USART_TransferReceiveNonBlocking(USART_Type *base,
-		usart_handle_t *handle, usart_transfer_t *xfer, size_t *receivedBytes) {
-	uint32_t i;
-	/* How many bytes to copy from ring buffer to user memory. */
-	size_t bytesToCopy = 0U;
-	/* How many bytes to receive. */
-	size_t bytesToReceive;
-	/* How many bytes currently have received. */
-	size_t bytesCurrentReceived;
-	uint32_t interruptMask = 0U;
+                                          usart_handle_t *handle,
+                                          usart_transfer_t *xfer,
+                                          size_t *receivedBytes)
+{
+    uint32_t i;
+    /* How many bytes to copy from ring buffer to user memory. */
+    size_t bytesToCopy = 0U;
+    /* How many bytes to receive. */
+    size_t bytesToReceive;
+    /* How many bytes currently have received. */
+    size_t bytesCurrentReceived;
+    uint32_t interruptMask = 0U;
 
-	/* Check arguments */
-	assert(!((NULL == base) || (NULL == handle) || (NULL == xfer)));
-	if ((NULL == base) || (NULL == handle) || (NULL == xfer)) {
-		return kStatus_InvalidArgument;
-	}
-	/* Check xfer members */
-	assert(!((0U == xfer->dataSize) || (NULL == xfer->rxData)));
-	if ((0U == xfer->dataSize) || (NULL == xfer->rxData)) {
-		return kStatus_InvalidArgument;
-	}
+    /* Check arguments */
+    assert(!((NULL == base) || (NULL == handle) || (NULL == xfer)));
+    if ((NULL == base) || (NULL == handle) || (NULL == xfer))
+    {
+        return kStatus_InvalidArgument;
+    }
+    /* Check xfer members */
+    assert(!((0U == xfer->dataSize) || (NULL == xfer->rxData)));
+    if ((0U == xfer->dataSize) || (NULL == xfer->rxData))
+    {
+        return kStatus_InvalidArgument;
+    }
 
-	/* Enable address detect when address match is enabled. */
-	if ((base->CFG & (uint32_t) USART_CFG_AUTOADDR_MASK) != 0U) {
-		base->CTL |= (uint32_t) USART_CTL_ADDRDET_MASK;
-	}
+    /* Enable address detect when address match is enabled. */
+    if ((base->CFG & (uint32_t)USART_CFG_AUTOADDR_MASK) != 0U)
+    {
+        base->CTL |= (uint32_t)USART_CTL_ADDRDET_MASK;
+    }
 
-	/* How to get data:
-	 1. If RX ring buffer is not enabled, then save xfer->data and xfer->dataSize
-	 to uart handle, enable interrupt to store received data to xfer->data. When
-	 all data received, trigger callback.
-	 2. If RX ring buffer is enabled and not empty, get data from ring buffer first.
-	 If there are enough data in ring buffer, copy them to xfer->data and return.
-	 If there are not enough data in ring buffer, copy all of them to xfer->data,
-	 save the xfer->data remained empty space to uart handle, receive data
-	 to this empty space and trigger callback when finished. */
-	if ((uint8_t) kUSART_RxBusy == handle->rxState) {
-		return kStatus_USART_RxBusy;
-	} else {
-		bytesToReceive = xfer->dataSize;
-		bytesCurrentReceived = 0U;
-		/* If RX ring buffer is used. */
-		if (handle->rxRingBuffer != NULL) {
-			/* Disable IRQ, protect ring buffer. */
-			interruptMask = USART_GetEnabledInterrupts(base);
-			USART_DisableInterrupts(base, interruptMask);
+    /* How to get data:
+       1. If RX ring buffer is not enabled, then save xfer->data and xfer->dataSize
+          to uart handle, enable interrupt to store received data to xfer->data. When
+          all data received, trigger callback.
+       2. If RX ring buffer is enabled and not empty, get data from ring buffer first.
+          If there are enough data in ring buffer, copy them to xfer->data and return.
+          If there are not enough data in ring buffer, copy all of them to xfer->data,
+          save the xfer->data remained empty space to uart handle, receive data
+          to this empty space and trigger callback when finished. */
+    if ((uint8_t)kUSART_RxBusy == handle->rxState)
+    {
+        return kStatus_USART_RxBusy;
+    }
+    else
+    {
+        bytesToReceive       = xfer->dataSize;
+        bytesCurrentReceived = 0U;
+        /* If RX ring buffer is used. */
+        if (handle->rxRingBuffer != NULL)
+        {
+            /* Disable IRQ, protect ring buffer. */
+            interruptMask = USART_GetEnabledInterrupts(base);
+            USART_DisableInterrupts(base, interruptMask);
 
-			/* How many bytes in RX ring buffer currently. */
-			bytesToCopy = USART_TransferGetRxRingBufferLength(handle);
-			if (bytesToCopy != 0U) {
-				bytesToCopy = MIN(bytesToReceive, bytesToCopy);
-				bytesToReceive -= bytesToCopy;
-				/* Copy data from ring buffer to user memory. */
-				for (i = 0U; i < bytesToCopy; i++) {
-					xfer->rxData[bytesCurrentReceived++] =
-							handle->rxRingBuffer[handle->rxRingBufferTail];
-					/* Wrap to 0. Not use modulo (%) because it might be large and slow. */
-					if ((size_t) handle->rxRingBufferTail + 1U
-							== handle->rxRingBufferSize) {
-						handle->rxRingBufferTail = 0U;
-					} else {
-						handle->rxRingBufferTail++;
-					}
-				}
-			}
-			/* If ring buffer does not have enough data, still need to read more data. */
-			if (bytesToReceive != 0U) {
-				/* No data in ring buffer, save the request to UART handle. */
-				handle->rxData = xfer->rxData + bytesCurrentReceived;
-				handle->rxDataSize = bytesToReceive;
-				handle->rxDataSizeAll = xfer->dataSize;
-				handle->rxState = (uint8_t) kUSART_RxBusy;
-			}
-			/* Re-enable IRQ. */
-			USART_EnableInterrupts(base, interruptMask);
-			/* Call user callback since all data are received. */
-			if (0U == bytesToReceive) {
-				if (handle->callback != NULL) {
-					handle->callback(base, handle, kStatus_USART_RxIdle,
-							handle->userData);
-				}
-			}
-		}
-		/* Ring buffer not used. */
-		else {
-			/* Disable IRQ when configuring transfer handle, in case interrupt occurs during the process and messes up
-			 * the handle value. */
-			interruptMask = USART_GetEnabledInterrupts(base);
-			USART_DisableInterrupts(base, interruptMask);
-			handle->rxData = xfer->rxData + bytesCurrentReceived;
-			handle->rxDataSize = bytesToReceive;
-			handle->rxDataSizeAll = bytesToReceive;
-			handle->rxState = (uint8_t) kUSART_RxBusy;
+            /* How many bytes in RX ring buffer currently. */
+            bytesToCopy = USART_TransferGetRxRingBufferLength(handle);
+            if (bytesToCopy != 0U)
+            {
+                bytesToCopy = MIN(bytesToReceive, bytesToCopy);
+                bytesToReceive -= bytesToCopy;
+                /* Copy data from ring buffer to user memory. */
+                for (i = 0U; i < bytesToCopy; i++)
+                {
+                    xfer->rxData[bytesCurrentReceived++] = handle->rxRingBuffer[handle->rxRingBufferTail];
+                    /* Wrap to 0. Not use modulo (%) because it might be large and slow. */
+                    if ((size_t)handle->rxRingBufferTail + 1U == handle->rxRingBufferSize)
+                    {
+                        handle->rxRingBufferTail = 0U;
+                    }
+                    else
+                    {
+                        handle->rxRingBufferTail++;
+                    }
+                }
+            }
+            /* If ring buffer does not have enough data, still need to read more data. */
+            if (bytesToReceive != 0U)
+            {
+                /* No data in ring buffer, save the request to UART handle. */
+                handle->rxData        = xfer->rxData + bytesCurrentReceived;
+                handle->rxDataSize    = bytesToReceive;
+                handle->rxDataSizeAll = xfer->dataSize;
+                handle->rxState       = (uint8_t)kUSART_RxBusy;
+            }
+            /* Re-enable IRQ. */
+            USART_EnableInterrupts(base, interruptMask);
+            /* Call user callback since all data are received. */
+            if (0U == bytesToReceive)
+            {
+                if (handle->callback != NULL)
+                {
+                    handle->callback(base, handle, kStatus_USART_RxIdle, handle->userData);
+                }
+            }
+        }
+        /* Ring buffer not used. */
+        else
+        {
+            /* Disable IRQ when configuring transfer handle, in case interrupt occurs during the process and messes up
+             * the handle value. */
+            interruptMask = USART_GetEnabledInterrupts(base);
+            USART_DisableInterrupts(base, interruptMask);
+            handle->rxData        = xfer->rxData + bytesCurrentReceived;
+            handle->rxDataSize    = bytesToReceive;
+            handle->rxDataSizeAll = bytesToReceive;
+            handle->rxState       = (uint8_t)kUSART_RxBusy;
 
-			/* Enable RX interrupt. */
-			base->FIFOINTENSET = USART_FIFOINTENSET_RXLVL_MASK;
-			/* Re-enable IRQ. */
-			USART_EnableInterrupts(base, interruptMask);
-		}
-		/* Return the how many bytes have read. */
-		if (receivedBytes != NULL) {
-			*receivedBytes = bytesCurrentReceived;
-		}
-	}
-	return kStatus_Success;
+            /* Enable RX interrupt. */
+            base->FIFOINTENSET = USART_FIFOINTENSET_RXLVL_MASK;
+            /* Re-enable IRQ. */
+            USART_EnableInterrupts(base, interruptMask);
+        }
+        /* Return the how many bytes have read. */
+        if (receivedBytes != NULL)
+        {
+            *receivedBytes = bytesCurrentReceived;
+        }
+    }
+    return kStatus_Success;
 }
 
 /*!
@@ -885,19 +960,21 @@ status_t USART_TransferReceiveNonBlocking(USART_Type *base,
  * param base USART peripheral base address.
  * param handle USART handle pointer.
  */
-void USART_TransferAbortReceive(USART_Type *base, usart_handle_t *handle) {
-	assert(NULL != handle);
+void USART_TransferAbortReceive(USART_Type *base, usart_handle_t *handle)
+{
+    assert(NULL != handle);
 
-	/* Only abort the receive to handle->rxData, the RX ring buffer is still working. */
-	if (NULL == handle->rxRingBuffer) {
-		/* Disable interrupts */
-		USART_DisableInterrupts(base, (uint32_t) kUSART_RxLevelInterruptEnable);
-		/* Empty rxFIFO */
-		base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
-	}
+    /* Only abort the receive to handle->rxData, the RX ring buffer is still working. */
+    if (NULL == handle->rxRingBuffer)
+    {
+        /* Disable interrupts */
+        USART_DisableInterrupts(base, (uint32_t)kUSART_RxLevelInterruptEnable);
+        /* Empty rxFIFO */
+        base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
+    }
 
-	handle->rxDataSize = 0U;
-	handle->rxState = (uint8_t) kUSART_RxIdle;
+    handle->rxDataSize = 0U;
+    handle->rxState    = (uint8_t)kUSART_RxIdle;
 }
 
 /*!
@@ -912,18 +989,19 @@ void USART_TransferAbortReceive(USART_Type *base, usart_handle_t *handle) {
  * retval kStatus_InvalidArgument Parameter is invalid.
  * retval kStatus_Success Get successfully through the parameter \p count;
  */
-status_t USART_TransferGetReceiveCount(USART_Type *base, usart_handle_t *handle,
-		uint32_t *count) {
-	assert(NULL != handle);
-	assert(NULL != count);
+status_t USART_TransferGetReceiveCount(USART_Type *base, usart_handle_t *handle, uint32_t *count)
+{
+    assert(NULL != handle);
+    assert(NULL != count);
 
-	if ((uint8_t) kUSART_RxIdle == handle->rxState) {
-		return kStatus_NoTransferInProgress;
-	}
+    if ((uint8_t)kUSART_RxIdle == handle->rxState)
+    {
+        return kStatus_NoTransferInProgress;
+    }
 
-	*count = handle->rxDataSizeAll - handle->rxDataSize;
+    *count = handle->rxDataSizeAll - handle->rxDataSize;
 
-	return kStatus_Success;
+    return kStatus_Success;
 }
 
 /*!
@@ -934,136 +1012,145 @@ status_t USART_TransferGetReceiveCount(USART_Type *base, usart_handle_t *handle,
  * param base USART peripheral base address.
  * param handle USART handle pointer.
  */
-void USART_TransferHandleIRQ(USART_Type *base, usart_handle_t *handle) {
-	/* Check arguments */
-	assert((NULL != base) && (NULL != handle));
+void USART_TransferHandleIRQ(USART_Type *base, usart_handle_t *handle)
+{
+    /* Check arguments */
+    assert((NULL != base) && (NULL != handle));
 
-	bool receiveEnabled = ((handle->rxDataSize != 0U)
-			|| (handle->rxRingBuffer != NULL));
-	bool sendEnabled = (handle->txDataSize != 0U);
-	uint8_t rxdata;
-	size_t tmpsize;
+    bool receiveEnabled = ((handle->rxDataSize != 0U) || (handle->rxRingBuffer != NULL));
+    bool sendEnabled    = (handle->txDataSize != 0U);
+    uint8_t rxdata;
+    size_t tmpsize;
 
-	/* If RX overrun. */
-	if ((base->FIFOSTAT & USART_FIFOSTAT_RXERR_MASK) != 0U) {
-		/* Clear rx error state. */
-		base->FIFOSTAT |= USART_FIFOSTAT_RXERR_MASK;
-		/* clear rxFIFO */
-		base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
-		/* Trigger callback. */
-		if (handle->callback != NULL) {
-			handle->callback(base, handle, kStatus_USART_RxError,
-					handle->userData);
-		}
-	}
-	while ((receiveEnabled
-			&& ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) != 0U))
-			|| (sendEnabled
-					&& ((base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK) != 0U))) {
-		/* Receive data */
-		if (receiveEnabled
-				&& ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) != 0U)) {
-			/* Clear address detect when RXFIFO has data. */
-			base->CTL &= ~(uint32_t) USART_CTL_ADDRDET_MASK;
-			/* Receive to app bufffer if app buffer is present */
-			if (handle->rxDataSize != 0U) {
-				rxdata = (uint8_t) base->FIFORD;
-				*handle->rxData = rxdata;
-				handle->rxDataSize--;
-				handle->rxData++;
-				receiveEnabled = ((handle->rxDataSize != 0U)
-						|| (handle->rxRingBuffer != NULL));
-				if (0U == handle->rxDataSize) {
-					if (NULL == handle->rxRingBuffer) {
-						base->FIFOINTENCLR = USART_FIFOINTENCLR_RXLVL_MASK
-								| USART_FIFOINTENSET_RXERR_MASK;
-					}
-					handle->rxState = (uint8_t) kUSART_RxIdle;
-					if (handle->callback != NULL) {
-						handle->callback(base, handle, kStatus_USART_RxIdle,
-								handle->userData);
-					}
-				}
-			}
-			/* Otherwise receive to ring buffer if ring buffer is present */
-			else {
-				if (handle->rxRingBuffer != NULL) {
-					/* If RX ring buffer is full, trigger callback to notify over run. */
-					if (USART_TransferIsRxRingBufferFull(handle)) {
-						if (handle->callback != NULL) {
-							handle->callback(base, handle,
-									kStatus_USART_RxRingBufferOverrun,
-									handle->userData);
-						}
-					}
-					/* If ring buffer is still full after callback function, the oldest data is overridden. */
-					if (USART_TransferIsRxRingBufferFull(handle)) {
-						/* Increase handle->rxRingBufferTail to make room for new data. */
-						if ((size_t) handle->rxRingBufferTail + 1U
-								== handle->rxRingBufferSize) {
-							handle->rxRingBufferTail = 0U;
-						} else {
-							handle->rxRingBufferTail++;
-						}
-					}
-					/* Read data. */
-					rxdata = (uint8_t) base->FIFORD;
-					handle->rxRingBuffer[handle->rxRingBufferHead] = rxdata;
-					/* Increase handle->rxRingBufferHead. */
-					if ((size_t) handle->rxRingBufferHead + 1U
-							== handle->rxRingBufferSize) {
-						handle->rxRingBufferHead = 0U;
-					} else {
-						handle->rxRingBufferHead++;
-					}
-				}
-			}
-		}
-		/* Send data */
-		if (sendEnabled
-				&& ((base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK) != 0U)) {
-			base->FIFOWR = *handle->txData;
-			handle->txDataSize--;
-			handle->txData++;
-			sendEnabled = handle->txDataSize != 0U;
-			if (!sendEnabled) {
-				base->FIFOINTENCLR = USART_FIFOINTENCLR_TXLVL_MASK;
+    /* If RX overrun. */
+    if ((base->FIFOSTAT & USART_FIFOSTAT_RXERR_MASK) != 0U)
+    {
+        /* Clear rx error state. */
+        base->FIFOSTAT |= USART_FIFOSTAT_RXERR_MASK;
+        /* clear rxFIFO */
+        base->FIFOCFG |= USART_FIFOCFG_EMPTYRX_MASK;
+        /* Trigger callback. */
+        if (handle->callback != NULL)
+        {
+            handle->callback(base, handle, kStatus_USART_RxError, handle->userData);
+        }
+    }
+    while ((receiveEnabled && ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) != 0U)) ||
+           (sendEnabled && ((base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK) != 0U)))
+    {
+        /* Receive data */
+        if (receiveEnabled && ((base->FIFOSTAT & USART_FIFOSTAT_RXNOTEMPTY_MASK) != 0U))
+        {
+            /* Clear address detect when RXFIFO has data. */
+            base->CTL &= ~(uint32_t)USART_CTL_ADDRDET_MASK;
+            /* Receive to app bufffer if app buffer is present */
+            if (handle->rxDataSize != 0U)
+            {
+                rxdata          = (uint8_t)base->FIFORD;
+                *handle->rxData = rxdata;
+                handle->rxDataSize--;
+                handle->rxData++;
+                receiveEnabled = ((handle->rxDataSize != 0U) || (handle->rxRingBuffer != NULL));
+                if (0U == handle->rxDataSize)
+                {
+                    if (NULL == handle->rxRingBuffer)
+                    {
+                        base->FIFOINTENCLR = USART_FIFOINTENCLR_RXLVL_MASK | USART_FIFOINTENSET_RXERR_MASK;
+                    }
+                    handle->rxState = (uint8_t)kUSART_RxIdle;
+                    if (handle->callback != NULL)
+                    {
+                        handle->callback(base, handle, kStatus_USART_RxIdle, handle->userData);
+                    }
+                }
+            }
+            /* Otherwise receive to ring buffer if ring buffer is present */
+            else
+            {
+                if (handle->rxRingBuffer != NULL)
+                {
+                    /* If RX ring buffer is full, trigger callback to notify over run. */
+                    if (USART_TransferIsRxRingBufferFull(handle))
+                    {
+                        if (handle->callback != NULL)
+                        {
+                            handle->callback(base, handle, kStatus_USART_RxRingBufferOverrun, handle->userData);
+                        }
+                    }
+                    /* If ring buffer is still full after callback function, the oldest data is overridden. */
+                    if (USART_TransferIsRxRingBufferFull(handle))
+                    {
+                        /* Increase handle->rxRingBufferTail to make room for new data. */
+                        if ((size_t)handle->rxRingBufferTail + 1U == handle->rxRingBufferSize)
+                        {
+                            handle->rxRingBufferTail = 0U;
+                        }
+                        else
+                        {
+                            handle->rxRingBufferTail++;
+                        }
+                    }
+                    /* Read data. */
+                    rxdata                                         = (uint8_t)base->FIFORD;
+                    handle->rxRingBuffer[handle->rxRingBufferHead] = rxdata;
+                    /* Increase handle->rxRingBufferHead. */
+                    if ((size_t)handle->rxRingBufferHead + 1U == handle->rxRingBufferSize)
+                    {
+                        handle->rxRingBufferHead = 0U;
+                    }
+                    else
+                    {
+                        handle->rxRingBufferHead++;
+                    }
+                }
+            }
+        }
+        /* Send data */
+        if (sendEnabled && ((base->FIFOSTAT & USART_FIFOSTAT_TXNOTFULL_MASK) != 0U))
+        {
+            base->FIFOWR = *handle->txData;
+            handle->txDataSize--;
+            handle->txData++;
+            sendEnabled = handle->txDataSize != 0U;
+            if (!sendEnabled)
+            {
+                base->FIFOINTENCLR = USART_FIFOINTENCLR_TXLVL_MASK;
 
-				base->INTENSET = USART_INTENSET_TXIDLEEN_MASK;
-			}
-		}
-	}
+                base->INTENSET = USART_INTENSET_TXIDLEEN_MASK;
+            }
+        }
+    }
 
-	/* Tx idle and the interrupt is enabled. */
-	if ((0U != (base->INTENSET & USART_INTENSET_TXIDLEEN_MASK))
-			&& (0U != (base->INTSTAT & USART_INTSTAT_TXIDLE_MASK))) {
-		/* Set txState to idle only when all data has been sent out to bus. */
-		handle->txState = (uint8_t) kUSART_TxIdle;
-		/* Disable tx idle interrupt */
-		base->INTENCLR = USART_INTENCLR_TXIDLECLR_MASK;
+    /* Tx idle and the interrupt is enabled. */
+    if ((0U != (base->INTENSET & USART_INTENSET_TXIDLEEN_MASK)) && (0U != (base->INTSTAT & USART_INTSTAT_TXIDLE_MASK)))
+    {
+        /* Set txState to idle only when all data has been sent out to bus. */
+        handle->txState = (uint8_t)kUSART_TxIdle;
+        /* Disable tx idle interrupt */
+        base->INTENCLR = USART_INTENCLR_TXIDLECLR_MASK;
 
-		/* Trigger callback. */
-		if (handle->callback != NULL) {
-			handle->callback(base, handle, kStatus_USART_TxIdle,
-					handle->userData);
-		}
-	}
+        /* Trigger callback. */
+        if (handle->callback != NULL)
+        {
+            handle->callback(base, handle, kStatus_USART_TxIdle, handle->userData);
+        }
+    }
 
-	/* ring buffer is not used */
-	if (NULL == handle->rxRingBuffer) {
-		tmpsize = handle->rxDataSize;
+    /* ring buffer is not used */
+    if (NULL == handle->rxRingBuffer)
+    {
+        tmpsize = handle->rxDataSize;
 
-		/* restore if rx transfer ends and rxLevel is different from default value */
-		if ((tmpsize == 0U)
-				&& (USART_FIFOTRIG_RXLVL_GET(base) != handle->rxWatermark)) {
-			base->FIFOTRIG = (base->FIFOTRIG & (~USART_FIFOTRIG_RXLVL_MASK))
-					| USART_FIFOTRIG_RXLVL(handle->rxWatermark);
-		}
-		/* decrease level if rx transfer is bellow */
-		if ((tmpsize != 0U)
-				&& (tmpsize < (USART_FIFOTRIG_RXLVL_GET(base) + 1U))) {
-			base->FIFOTRIG = (base->FIFOTRIG & (~USART_FIFOTRIG_RXLVL_MASK))
-					| (USART_FIFOTRIG_RXLVL(tmpsize - 1U));
-		}
-	}
+        /* restore if rx transfer ends and rxLevel is different from default value */
+        if ((tmpsize == 0U) && (USART_FIFOTRIG_RXLVL_GET(base) != handle->rxWatermark))
+        {
+            base->FIFOTRIG =
+                (base->FIFOTRIG & (~USART_FIFOTRIG_RXLVL_MASK)) | USART_FIFOTRIG_RXLVL(handle->rxWatermark);
+        }
+        /* decrease level if rx transfer is bellow */
+        if ((tmpsize != 0U) && (tmpsize < (USART_FIFOTRIG_RXLVL_GET(base) + 1U)))
+        {
+            base->FIFOTRIG = (base->FIFOTRIG & (~USART_FIFOTRIG_RXLVL_MASK)) | (USART_FIFOTRIG_RXLVL(tmpsize - 1U));
+        }
+    }
 }

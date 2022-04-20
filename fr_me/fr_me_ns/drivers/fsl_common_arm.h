@@ -41,10 +41,10 @@
  * For example, to set a 32-bit register bit1:bit0 to 0b10, use like this:
  *
  * @code
- volatile uint32_t * reg = (volatile uint32_t *)REG_ADDR;
+   volatile uint32_t * reg = (volatile uint32_t *)REG_ADDR;
 
- SDK_ATOMIC_LOCAL_CLEAR_AND_SET(reg, 0x03, 0x02);
- @endcode
+   SDK_ATOMIC_LOCAL_CLEAR_AND_SET(reg, 0x03, 0x02);
+   @endcode
  *
  * In this example, the register bit1:bit0 are cleared and bit1 is set, as a result,
  * register bit1:bit0 = 0b10.
@@ -88,131 +88,130 @@
         (ops);                                      \
     } while (0UL != __STREXW((val), (addr)))
 
-static inline void _SDK_AtomicLocalAdd1Byte(volatile uint8_t *addr, uint8_t val) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalAdd1Byte(volatile uint8_t *addr, uint8_t val)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val += val);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val += val);
 }
 
-static inline void _SDK_AtomicLocalAdd2Byte(volatile uint16_t *addr,
-		uint16_t val) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalAdd2Byte(volatile uint16_t *addr, uint16_t val)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val += val);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val += val);
 }
 
-static inline void _SDK_AtomicLocalAdd4Byte(volatile uint32_t *addr,
-		uint32_t val) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalAdd4Byte(volatile uint32_t *addr, uint32_t val)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val += val);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val += val);
 }
 
-static inline void _SDK_AtomicLocalSub1Byte(volatile uint8_t *addr, uint8_t val) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalSub1Byte(volatile uint8_t *addr, uint8_t val)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val -= val);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val -= val);
 }
 
-static inline void _SDK_AtomicLocalSub2Byte(volatile uint16_t *addr,
-		uint16_t val) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalSub2Byte(volatile uint16_t *addr, uint16_t val)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val -= val);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val -= val);
 }
 
-static inline void _SDK_AtomicLocalSub4Byte(volatile uint32_t *addr,
-		uint32_t val) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalSub4Byte(volatile uint32_t *addr, uint32_t val)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val -= val);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val -= val);
 }
 
-static inline void _SDK_AtomicLocalSet1Byte(volatile uint8_t *addr,
-		uint8_t bits) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalSet1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val |= bits);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val |= bits);
 }
 
-static inline void _SDK_AtomicLocalSet2Byte(volatile uint16_t *addr,
-		uint16_t bits) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalSet2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val |= bits);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val |= bits);
 }
 
-static inline void _SDK_AtomicLocalSet4Byte(volatile uint32_t *addr,
-		uint32_t bits) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalSet4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val |= bits);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val |= bits);
 }
 
-static inline void _SDK_AtomicLocalClear1Byte(volatile uint8_t *addr,
-		uint8_t bits) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalClear1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val &= ~bits);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val &= ~bits);
 }
 
-static inline void _SDK_AtomicLocalClear2Byte(volatile uint16_t *addr,
-		uint16_t bits) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalClear2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val &= ~bits);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val &= ~bits);
 }
 
-static inline void _SDK_AtomicLocalClear4Byte(volatile uint32_t *addr,
-		uint32_t bits) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalClear4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val &= ~bits);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val &= ~bits);
 }
 
-static inline void _SDK_AtomicLocalToggle1Byte(volatile uint8_t *addr,
-		uint8_t bits) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalToggle1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val ^= bits);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val ^= bits);
 }
 
-static inline void _SDK_AtomicLocalToggle2Byte(volatile uint16_t *addr,
-		uint16_t bits) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalToggle2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val ^= bits);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val ^= bits);
 }
 
-static inline void _SDK_AtomicLocalToggle4Byte(volatile uint32_t *addr,
-		uint32_t bits) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalToggle4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val ^= bits);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val ^= bits);
 }
 
-static inline void _SDK_AtomicLocalClearAndSet1Byte(volatile uint8_t *addr,
-		uint8_t clearBits, uint8_t setBits) {
-	uint8_t s_val;
+static inline void _SDK_AtomicLocalClearAndSet1Byte(volatile uint8_t *addr, uint8_t clearBits, uint8_t setBits)
+{
+    uint8_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val,
-			s_val = (s_val & ~clearBits) | setBits);
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
 }
 
-static inline void _SDK_AtomicLocalClearAndSet2Byte(volatile uint16_t *addr,
-		uint16_t clearBits, uint16_t setBits) {
-	uint16_t s_val;
+static inline void _SDK_AtomicLocalClearAndSet2Byte(volatile uint16_t *addr, uint16_t clearBits, uint16_t setBits)
+{
+    uint16_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val,
-			s_val = (s_val & ~clearBits) | setBits);
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
 }
 
-static inline void _SDK_AtomicLocalClearAndSet4Byte(volatile uint32_t *addr,
-		uint32_t clearBits, uint32_t setBits) {
-	uint32_t s_val;
+static inline void _SDK_AtomicLocalClearAndSet4Byte(volatile uint32_t *addr, uint32_t clearBits, uint32_t setBits)
+{
+    uint32_t s_val;
 
-	_SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val,
-			s_val = (s_val & ~clearBits) | setBits);
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
 }
 
 #define SDK_ATOMIC_LOCAL_ADD(addr, val)                                                                                        \
@@ -497,12 +496,14 @@ extern "C" {
  * @retval kStatus_Success Interrupt enabled successfully
  * @retval kStatus_Fail Failed to enable the interrupt
  */
-static inline status_t EnableIRQ(IRQn_Type interrupt) {
-	status_t status = kStatus_Success;
+static inline status_t EnableIRQ(IRQn_Type interrupt)
+{
+    status_t status = kStatus_Success;
 
-	if (NotAvail_IRQn == interrupt) {
-		status = kStatus_Fail;
-	}
+    if (NotAvail_IRQn == interrupt)
+    {
+        status = kStatus_Fail;
+    }
 
 #if defined(FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS) && (FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS > 0)
     else if ((int32_t)interrupt >= (int32_t)FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
@@ -511,15 +512,16 @@ static inline status_t EnableIRQ(IRQn_Type interrupt) {
     }
 #endif
 
-	else {
+    else
+    {
 #if defined(__GIC_PRIO_BITS)
         GIC_EnableIRQ(interrupt);
 #else
-		NVIC_EnableIRQ(interrupt);
+        NVIC_EnableIRQ(interrupt);
 #endif
-	}
+    }
 
-	return status;
+    return status;
 }
 
 /*!
@@ -538,12 +540,14 @@ static inline status_t EnableIRQ(IRQn_Type interrupt) {
  * @retval kStatus_Success Interrupt disabled successfully
  * @retval kStatus_Fail Failed to disable the interrupt
  */
-static inline status_t DisableIRQ(IRQn_Type interrupt) {
-	status_t status = kStatus_Success;
+static inline status_t DisableIRQ(IRQn_Type interrupt)
+{
+    status_t status = kStatus_Success;
 
-	if (NotAvail_IRQn == interrupt) {
-		status = kStatus_Fail;
-	}
+    if (NotAvail_IRQn == interrupt)
+    {
+        status = kStatus_Fail;
+    }
 
 #if defined(FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS) && (FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS > 0)
     else if ((int32_t)interrupt >= (int32_t)FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
@@ -552,15 +556,16 @@ static inline status_t DisableIRQ(IRQn_Type interrupt) {
     }
 #endif
 
-	else {
+    else
+    {
 #if defined(__GIC_PRIO_BITS)
         GIC_DisableIRQ(interrupt);
 #else
-		NVIC_DisableIRQ(interrupt);
+        NVIC_DisableIRQ(interrupt);
 #endif
-	}
+    }
 
-	return status;
+    return status;
 }
 
 /*!
@@ -571,7 +576,8 @@ static inline status_t DisableIRQ(IRQn_Type interrupt) {
  *
  * @return Current primask value.
  */
-static inline uint32_t DisableGlobalIRQ(void) {
+static inline uint32_t DisableGlobalIRQ(void)
+{
 #if defined(CPSR_I_Msk)
     uint32_t cpsr = __get_CPSR() & CPSR_I_Msk;
 
@@ -579,11 +585,11 @@ static inline uint32_t DisableGlobalIRQ(void) {
 
     return cpsr;
 #else
-	uint32_t regPrimask = __get_PRIMASK();
+    uint32_t regPrimask = __get_PRIMASK();
 
-	__disable_irq();
+    __disable_irq();
 
-	return regPrimask;
+    return regPrimask;
 #endif
 }
 
@@ -597,11 +603,12 @@ static inline uint32_t DisableGlobalIRQ(void) {
  * @param primask value of primask register to be restored. The primask value is supposed to be provided by the
  * DisableGlobalIRQ().
  */
-static inline void EnableGlobalIRQ(uint32_t primask) {
+static inline void EnableGlobalIRQ(uint32_t primask)
+{
 #if defined(CPSR_I_Msk)
     __set_CPSR((__get_CPSR() & ~CPSR_I_Msk) | primask);
 #else
-	__set_PRIMASK(primask);
+    __set_PRIMASK(primask);
 #endif
 }
 

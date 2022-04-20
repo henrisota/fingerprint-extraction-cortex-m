@@ -36,14 +36,14 @@ void __assertion_failed(char *failedExpr)
     }
 }
 #else
-void __assert_func(const char *file, int line, const char *func,
-		const char *failedExpr) {
-	(void) PRINTF(
-			"ASSERT ERROR \" %s \": file \"%s\" Line \"%d\" function name \"%s\" \n",
-			failedExpr, file, line, func);
-	for (;;) {
-		__BKPT(0);
-	}
+void __assert_func(const char *file, int line, const char *func, const char *failedExpr)
+{
+    (void)PRINTF("ASSERT ERROR \" %s \": file \"%s\" Line \"%d\" function name \"%s\" \n", failedExpr, file, line,
+                 func);
+    for (;;)
+    {
+        __BKPT(0);
+    }
 }
 #endif /* defined(__REDLIB__) */
 #else  /* (defined(__CC_ARM) || (defined(__ICCARM__)) || (defined(__ARMCC_VERSION)) */
