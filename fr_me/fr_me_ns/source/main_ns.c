@@ -38,6 +38,8 @@ int main(void) {
 
     PRINTF_NSE("Normal World\r\n");
 
+    PRINTF_NSE("Going into looping state...\r\n");
+
     while (1) {
     }
 }
