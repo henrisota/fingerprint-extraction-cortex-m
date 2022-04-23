@@ -425,13 +425,15 @@ int print_image_array(short **image_array, long length, long width) {
     int i;
     int j;
 
-    for (int i = 0; i < length; ++i) {
-        for (int j = 0; j < width; ++j) {
+    for (i = 0; i < length; ++i) {
+        for (j = 0; j < width; ++j) {
             printf("%d ", image_array[i][j]);
         }
 
         printf("\n");
     }
+
+    return 1;
 }
 
 int flip_image_array(short **image_array, long rows, long cols) {
