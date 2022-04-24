@@ -60,10 +60,10 @@ functional_group:
           '29', '3', '30', '31', '4', '5', '6', '7', '8', '9']}}
   - regions: [{memory: PROGRAM_FLASH, security: s_priv, start: '0x00000000', size: '0x00040000'}, {memory: PROGRAM_FLASH, security: ns_user, start: '0x00040000',
       size: '0x00060000'}, {memory: BootROM, security: ns_user, start: '0x00000000', size: '0x00020000'}, {memory: SRAMX, security: ns_user, start: '0x00000000',
-      size: '0x00008000'}, {memory: SRAM0, security: s_priv, start: '0x00000000', size: '0x00008000'}, {memory: SRAM0, security: ns_user, start: '0x00008000', size: '0x00008000'},
-    {memory: SRAM1, security: ns_user, start: '0x00000000', size: '0x00010000'}, {memory: SRAM2, security: ns_user, start: '0x00000000', size: '0x00010000'}, {memory: SRAM3,
-      security: ns_user, start: '0x00000000', size: '0x00010000'}, {memory: SRAM4, security: ns_user, start: '0x00000000', size: '0x00004000'}, {memory: AHBperipherals_port10_ahb_secure_ctrl_area,
-      security: ns_user, start: '0x00000000', size: '0x00004000'}, {memory: USB_RAM, security: ns_user, start: '0x00000000', size: '0x00004000'}]
+      size: '0x00008000'}, {memory: SRAM0, security: s_priv, start: '0x00000000', size: '0x00010000'}, {memory: SRAM1, security: s_priv, start: '0x00000000', size: '0x00010000'},
+    {memory: SRAM2, security: ns_user, start: '0x00000000', size: '0x00010000'}, {memory: SRAM3, security: ns_user, start: '0x00000000', size: '0x00010000'}, {memory: SRAM4,
+      security: ns_user, start: '0x00000000', size: '0x00004000'}, {memory: AHBperipherals_port10_ahb_secure_ctrl_area, security: ns_user, start: '0x00000000', size: '0x00004000'},
+    {memory: USB_RAM, security: ns_user, start: '0x00000000', size: '0x00004000'}]
   - masters: {ns_user: {id: [HASH, MCM33C, MCM33S, PQ, SDIO, SDMA0, SDMA1, USBFSD, USBFSH]}}
   - peripherals: {ns_user: {id: [ADC0, AHB_SECURE_CTRL, ANACTRL, CASPER, CRC_ENGINE, CTIMER0, CTIMER1, CTIMER2, CTIMER3, CTIMER4, DBGMAILBOX, DMA0, DMA1, FLASH,
         FLEXCOMM1, FLEXCOMM2, FLEXCOMM3, FLEXCOMM4, FLEXCOMM5, FLEXCOMM6, FLEXCOMM7, GINT0, GINT1, GPIO, HASHCRYPT, INPUTMUX, MAILBOX, MRT0, OSTIMER, PINT, PLU, PMC,
@@ -89,10 +89,10 @@ functional_group:
   - yes:
     - id: [NSACR_CP0, NSACR_CP1, NSACR_CP10, NSACR_CP11, AHB_MISC_CTRL_REG_ENABLE_SECURE_CHECKING, AHB_MISC_CTRL_REG_WRITE_LOCK]
 - user_memory_regions: [{id: Region_1, security: s_priv, name: Secure Code, start: '0x10000000', size: '0x0003FE00'}, {id: Region_2, security: nsc_priv, name: Veneer
-      Table, start: '0x1003FE00', size: '0x00000200'}, {id: Region_3, security: s_priv, name: Secure Stack and Data, start: '0x30000000', size: '0x00008000'}, {id: Region_4,
+      Table, start: '0x1003FE00', size: '0x00000200'}, {id: Region_3, security: s_priv, name: Secure Stack and Data, start: '0x30000000', size: '0x00020000'}, {id: Region_4,
     security: ns_user, name: Non-secure Code, description: Privilege check is disabled so reset value (NS-User) can be used, start: '0x00040000', size: '0x00060000'},
-  {id: Region_5, security: ns_user, name: Non-secure Stack and Data, description: 'Privilege check is disabled so reset value (NS-User) can be used. ', start: '0x20008000',
-    size: '0x0002B000'}]
+  {id: Region_5, security: ns_user, name: Non-secure Stack and Data, description: 'Privilege check is disabled so reset value (NS-User) can be used. ', start: '0x20020000',
+    size: '0x00024000'}]
 - mpus:
   - mpu:
     - enabled: 'false'
@@ -207,9 +207,9 @@ void BOARD_InitTrustZone()
     AHB_SECURE_CTRL->SEC_CTRL_FLASH_ROM[0].SEC_CTRL_ROM_MEM_RULE[3] = 0;
     AHB_SECURE_CTRL->SEC_CTRL_RAMX[0].MEM_RULE[0] = 0;
     AHB_SECURE_CTRL->SEC_CTRL_RAM0[0].MEM_RULE[0] = 0x33333333U;
-    AHB_SECURE_CTRL->SEC_CTRL_RAM0[0].MEM_RULE[1] = 0;
-    AHB_SECURE_CTRL->SEC_CTRL_RAM1[0].MEM_RULE[0] = 0;
-    AHB_SECURE_CTRL->SEC_CTRL_RAM1[0].MEM_RULE[1] = 0;
+    AHB_SECURE_CTRL->SEC_CTRL_RAM0[0].MEM_RULE[1] = 0x33333333U;
+    AHB_SECURE_CTRL->SEC_CTRL_RAM1[0].MEM_RULE[0] = 0x33333333U;
+    AHB_SECURE_CTRL->SEC_CTRL_RAM1[0].MEM_RULE[1] = 0x33333333U;
     AHB_SECURE_CTRL->SEC_CTRL_RAM2[0].MEM_RULE[0] = 0;
     AHB_SECURE_CTRL->SEC_CTRL_RAM2[0].MEM_RULE[1] = 0;
     AHB_SECURE_CTRL->SEC_CTRL_RAM3[0].MEM_RULE[0] = 0;
