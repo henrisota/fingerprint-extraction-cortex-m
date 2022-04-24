@@ -14,7 +14,7 @@
 struct fingerprint_image_t {
     unsigned int length;
     unsigned int width;
-    unsigned char data[100][WIDTH];
+    unsigned char data[LENGTH][WIDTH];
 };
 
 #endif /* DATA_H_ */
