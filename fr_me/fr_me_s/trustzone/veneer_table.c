@@ -66,3 +66,7 @@ TZM_IS_NOSECURE_ENTRY void DbgConsole_Printf_NSE(char const *s) {
 TZM_IS_NOSECURE_ENTRY unsigned int LoadFingerprintImage_NSE(unsigned char fingerprint[][10], unsigned int length, unsigned int width, char *key) {
     return LoadFingerprintImage(fingerprint, length, width, key);
 };
+
+TZM_IS_NOSECURE_ENTRY unsigned int ExtractMinutiae_NSE(unsigned int length, unsigned int width) {
+	return ExtractMinutiae(length, width);
+}

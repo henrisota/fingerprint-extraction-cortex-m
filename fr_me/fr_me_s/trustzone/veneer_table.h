@@ -39,4 +39,16 @@ void DbgConsole_Printf_NSE(char const *s);
  *
  */
 unsigned int LoadFingerprintImage_NSE(unsigned char fingerprint[][10], unsigned int length, unsigned int width, char *key);
+
+/*!
+ * @brief Entry function for extracting the minutiae from the loaded fingerprint (ExtractMinutiae)
+ *
+ * This function provides interface between secure and normal worlds
+ * This functions is called from normal world only
+ *
+ * @param length Number of rows of the fingerprint data or the height of the image from the top left
+ * @param width Number of columns of the fingerprint data or the width of the image from the top left
+ * @return Positive value if the minutiae were extracted successfully, otherwise 0
+ */
+unsigned int ExtractMinutiae_NSE(unsigned int length, unsigned int width);
 #endif /* _VENEER_TABLE_H_ */

@@ -48,6 +48,12 @@ int main(void) {
     // Load the fingerprint image into the secure world and confirm if it was successfully loaded
     if (LoadFingerprintImage_NSE(fingerprint, LENGTH, WIDTH, key)) {
         PRINTF_NSE("Loaded image\r\n");
+
+        result = ExtractMinutiae_NSE(LENGTH, WIDTH);
+
+		if (result == 1) {
+			PRINTF("The extraction was successful.\r\n");
+		}
     }
 
     PRINTF_NSE("Going into looping state...\r\n");
