@@ -45,19 +45,6 @@ int main(void) {
     // Key is used to authorize non-secure application and to proceed with loading
     char *key = "1048576";
 
-    int b = 0;
-
-    int i;
-    int j;
-
-    for (i = 0; i < 10; ++i) {
-    	for (j = 0; j < 2; ++j) {
-    		b = fingerprint[i][j];
-    		++b;
-    		++b;
-    	}
-    }
-
     // Load the fingerprint image into the secure world and confirm if it was successfully loaded
     if (LoadFingerprintImage_NSE(fingerprint, LENGTH, WIDTH, key)) {
         PRINTF_NSE("Loaded image\r\n");
