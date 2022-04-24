@@ -14,6 +14,8 @@
 #include "fsl_debug_console.h"
 #include "stdint.h"
 #include "tzm_api.h"
+
+#include "../source/fingerprint_extraction/extract.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -27,8 +29,6 @@ typedef int (*callbackptr_NS)(char const *s1, char const *s2) TZM_IS_NONSECURE_C
 /*******************************************************************************
  * Code
  ******************************************************************************/
-/* strnlen function implementation for arm compiler */
-#if defined(__arm__)
 size_t strnlen(const char *s, size_t maxLength) {
     size_t length = 0;
     while ((length <= maxLength) && (*s)) {
@@ -37,7 +37,6 @@ size_t strnlen(const char *s, size_t maxLength) {
     }
     return length;
 }
-#endif
 
 TZM_IS_NOSECURE_ENTRY void DbgConsole_Printf_NSE(char const *s) {
     size_t string_length;
@@ -63,3 +62,7 @@ TZM_IS_NOSECURE_ENTRY void DbgConsole_Printf_NSE(char const *s) {
 #endif
     PRINTF(s);
 }
+
+TZM_IS_NOSECURE_ENTRY unsigned int LoadFingerprintImage_NSE(unsigned char fingerprint[][10], unsigned int length, unsigned int width, char *key) {
+    return LoadFingerprintImage(fingerprint, length, width, key);
+};
