@@ -61,7 +61,7 @@ int main(void) {
     BOARD_InitDebugConsole();
 
     PRINTF("Secure World\r\n");
-    PRINTF("Transitioning to normal world...\r\n");
+    PRINTF("Transitioning to normal world...\r\n\r\n");
 
     /* Call non-secure application - jump to normal world */
     TZM_JumpToNormalWorld(NON_SECURE_START);
