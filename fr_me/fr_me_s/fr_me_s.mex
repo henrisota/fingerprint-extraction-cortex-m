@@ -382,9 +382,8 @@
                <relative_region start="262144" size="393216" security="ns_user" memory="PROGRAM_FLASH"/>
                <relative_region start="0" size="131072" security="ns_user" memory="BootROM"/>
                <relative_region start="0" size="32768" security="ns_user" memory="SRAMX"/>
-               <relative_region start="0" size="32768" security="s_priv" memory="SRAM0"/>
-               <relative_region start="32768" size="32768" security="ns_user" memory="SRAM0"/>
-               <relative_region start="0" size="65536" security="ns_user" memory="SRAM1"/>
+               <relative_region start="0" size="65536" security="s_priv" memory="SRAM0"/>
+               <relative_region start="0" size="65536" security="s_priv" memory="SRAM1"/>
                <relative_region start="0" size="65536" security="ns_user" memory="SRAM2"/>
                <relative_region start="0" size="65536" security="ns_user" memory="SRAM3"/>
                <relative_region start="0" size="16384" security="ns_user" memory="SRAM4"/>
@@ -705,9 +704,9 @@
             <user_memory_regions>
                <user_memory_region start="268435456" size="261632" id="Region_1" name="Secure Code" security="s_priv"/>
                <user_memory_region start="268697088" size="512" id="Region_2" name="Veneer Table" security="nsc_priv"/>
-               <user_memory_region start="805306368" size="32768" id="Region_3" name="Secure Stack and Data" security="s_priv"/>
+               <user_memory_region start="805306368" size="131072" id="Region_3" name="Secure Stack and Data" security="s_priv"/>
                <user_memory_region start="262144" size="393216" id="Region_4" description="Privilege check is disabled so reset value (NS-User) can be used" name="Non-secure Code" security="ns_user"/>
-               <user_memory_region start="536903680" size="176128" id="Region_5" description="Privilege check is disabled so reset value (NS-User) can be used. " name="Non-secure Stack and Data" security="ns_user"/>
+               <user_memory_region start="537001984" size="147456" id="Region_5" description="Privilege check is disabled so reset value (NS-User) can be used. " name="Non-secure Stack and Data" security="ns_user"/>
             </user_memory_regions>
             <mpus>
                <mpu enabled="false" priv_default_map="false" handler_enabled="false" id="s" generate_code_for_disabled_regions="false">
