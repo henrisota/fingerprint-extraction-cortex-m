@@ -53,3 +53,7 @@ dkms.conf
 
 # Build images
 *.gbf
+
+# Build executables
+fr_me_local/main
+image_read/main
