@@ -23,6 +23,8 @@ int main(int argc, char *argv[]) {
 
     print_image_array(image, length, width);
 
+    create_grayscale_binary_file(image, length, width);
+
     read_bmp_file_header(name, &file_header);
 
     print_bmp_file_header(&file_header);

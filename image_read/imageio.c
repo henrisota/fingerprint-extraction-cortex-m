@@ -436,6 +436,34 @@ int print_image_array(short **image_array, long length, long width) {
     return 1;
 }
 
+int create_grayscale_binary_file(short **image_array, long length, long width) {
+    FILE *fp;
+    int i;
+    int j;
+
+    fp = fopen("binary_image.gbf", "w+");
+
+    if (fp == NULL) {
+        printf("Output file could not be created or opened and rewritten.\n");
+        return 0;
+    }
+
+    fputc(((unsigned long) length & 0xff00) >> 8, fp);
+    fputc(((unsigned long) length & 0x00ff), fp);
+    fputc(((unsigned long) width & 0xff00) >> 8, fp);
+    fputc(((unsigned long) width & 0x00ff), fp);
+
+    for (i = 0; i < length; ++i) {
+        for (j = 0; j < width; ++j) {
+            fputc(image_array[i][j], fp);
+        }
+    }
+
+    fclose(fp);
+
+    return 1;
+}
+
 int flip_image_array(short **image_array, long rows, long cols) {
     int i;
     int j;

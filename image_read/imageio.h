@@ -1,5 +1,5 @@
-#ifndef IMAGEIO_H
-#define IMAGEIO_H
+#ifndef _IMAGEIO_H
+#define _IMAGEIO_H
 
 #include <math.h>
 #include <stdio.h>
@@ -139,6 +139,7 @@ short **allocate_image_array(long length, long width);
 int free_image_array(short **image_array, long length);
 int read_image_array(char *file_name, short **image_array);
 int print_image_array(short **image_array, long length, long width);
+int create_grayscale_binary_file(short **image_array, long length, long width);
 int flip_image_array(short **image_array, long rows, long cols);
 int get_image_size(char *file_name, long *rows, long *cols);
 int get_bits_per_pixel(char *file_name, long *bitsperpixel);
