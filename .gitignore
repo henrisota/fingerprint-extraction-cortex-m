@@ -52,7 +52,9 @@ Mkfile.old
 dkms.conf
 
 # Build images
+*.bmp
 *.gbf
+*.csv
 
 # Build executables
 fr_me_local/main
