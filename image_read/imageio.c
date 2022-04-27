@@ -351,9 +351,9 @@ int read_bmp_image(char *file_name, short **array) {
             array[i][j] = rgb[place].blue;
         }
 
-        if (pad != 0) {
-            position = fseek(fp, pad, SEEK_CUR);
-        }
+        // if (pad != 0) {
+        //     position = fseek(fp, pad, SEEK_CUR);
+        // }
     }
 
     if (negative == 0) {
