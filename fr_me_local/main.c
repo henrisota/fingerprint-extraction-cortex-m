@@ -29,21 +29,9 @@ int main(int argc, char *argv[]) {
 
     image = read_grayscale_binary_file(name, &length, &width);
 
-    print_image_array(image, length, width, OUTPUT_TO_FILE);
-
-    printf("Starting preprocessing.\n");
-
     preprocess(image, length, width, &block_segmentation, &segmented_image_array_size);
 
-    printf("Preprocessing is done.\n");
-
-    apply_segmentation_on_image(image, length, width, &block_segmentation, segmented_image_array_size);
-
-    printf("Starting extraction.\n");
-
     // extract(image, length, width, block_segmentation);
-
-    printf("Extraction is done.\n");
 
     // Deallocate memory
     free(block_segmentation);
