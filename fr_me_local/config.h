@@ -14,4 +14,7 @@
 #define FOREGROUND_BLOCK 1
 #define BACKGROUND_BLOCK 0
 
+#define EROSION_ITERATIONS                     2
+#define EROSION_FOREGROUND_NEIGHBORS_THRESHOLD 4
+
 #endif
