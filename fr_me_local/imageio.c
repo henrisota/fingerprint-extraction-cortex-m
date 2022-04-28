@@ -51,8 +51,6 @@ unsigned char **read_grayscale_binary_file(const char *filename, long *length, l
         }
     }
 
-    printf("%lu | %lu\n", *length, *width);
-
     fclose(fp);
 
     return image_array;
