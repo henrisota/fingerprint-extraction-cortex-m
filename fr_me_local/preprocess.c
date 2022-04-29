@@ -7,16 +7,16 @@
 #include "segment.h"
 #include "utils.h"
 
-int preprocess(unsigned char **image, long length, long width, unsigned char **block_segmentation, int *segmented_image_array_size) {
+int preprocess(unsigned char **image, long length, long width, unsigned char **segmentation_array, int *segmentation_array_size) {
     int success = 0;
 
-    *segmented_image_array_size = 0;
+    *segmentation_array_size = 0;
 
     if (VERBOSE) {
         printf("Starting preprocessing.\n");
     }
 
-    *block_segmentation = segment(image, length, width, segmented_image_array_size);
+    *segmentation_array = segment(image, length, width, segmentation_array_size);
 
     if (VERBOSE) {
         printf("Finished preprocessing.\n");
