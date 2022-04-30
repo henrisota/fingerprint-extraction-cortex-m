@@ -1,7 +1,6 @@
 #include "imageio.h"
 
 int extract_short_from_buffer(char buffer[], int lsb, int start, short *number) {
-    int i;
     union short_char_union lcu;
 
     lcu.s_num = 0;
@@ -22,7 +21,6 @@ int extract_short_from_buffer(char buffer[], int lsb, int start, short *number) 
 }
 
 int extract_ushort_from_buffer(char buffer[], int lsb, int start, unsigned short *number) {
-    int i;
     union ushort_char_union lcu;
 
     lcu.s_num = 0;
@@ -43,7 +41,6 @@ int extract_ushort_from_buffer(char buffer[], int lsb, int start, unsigned short
 }
 
 int extract_long_from_buffer(char buffer[], int lsb, int start, long *number) {
-    int i;
     union long_char_union lcu;
 
     lcu.l_num = 0;
@@ -68,7 +65,6 @@ int extract_long_from_buffer(char buffer[], int lsb, int start, long *number) {
 }
 
 int extract_ulong_from_buffer(char buffer[], int lsb, int start, unsigned long *number) {
-    int i;
     union ulong_char_union lcu;
 
     lcu.l_num = 0;
@@ -95,7 +91,7 @@ int extract_ulong_from_buffer(char buffer[], int lsb, int start, unsigned long *
 int calculate_pad(long width) {
     int pad = 0;
 
-    pad = ((width % 4) == 0) ?: (4 - (width % 4));
+    pad = ((width % 4) == 0) ? 0 : (4 - (width % 4));
 
     return pad;
 }
@@ -126,7 +122,6 @@ int is_a_bmp(char *file_name) {
 int read_bmp_file_header(char *file_name, struct bmpfileheader *file_header) {
     // Hold temporary data retrieved from image
     char buffer[10];
-    long ll;
     short ss;
     unsigned long ull;
     unsigned short uss;
@@ -161,7 +156,7 @@ int read_bmp_file_header(char *file_name, struct bmpfileheader *file_header) {
     return 1;
 }
 
-int print_bmp_file_header(struct bmpfileheader *file_header) {
+void print_bmp_file_header(struct bmpfileheader *file_header) {
     printf("File type: %x\n", file_header->filetype);
     printf("File size: %lu\n", file_header->filesize);
     printf("Bit map offset: %lu\n", file_header->bitmapoffset);
@@ -171,7 +166,6 @@ int read_bm_header(char *file_name, struct bitmapheader *bm_header) {
     // Hold temporary data retrieved from image
     char buffer[10];
     long ll;
-    short ss;
     unsigned long ull;
     unsigned short uss;
 
@@ -231,7 +225,7 @@ int read_bm_header(char *file_name, struct bitmapheader *bm_header) {
     return 1;
 }
 
-int print_bm_header(struct bitmapheader *bm_header) {
+void print_bm_header(struct bitmapheader *bm_header) {
     printf("Width: %ld\n", bm_header->width);
     printf("Height: %ld\n", bm_header->height);
     printf("Color planes: %d\n", bm_header->planes);
@@ -270,14 +264,12 @@ int read_color_table(char *file_name, struct ctstruct *rgb, int size) {
     return 1;
 }
 
-int print_color_table(struct ctstruct *rgb, int size) {
+void print_color_table(struct ctstruct *rgb, int size) {
     int i;
 
     for (i = 0; i < size; ++i) {
         printf("B: %d G: %d R: %d\n", rgb[i].blue, rgb[i].green, rgb[i].red);
     }
-
-    return 1;
 }
 
 int read_bmp_image(char *file_name, short **array) {
@@ -289,12 +281,11 @@ int read_bmp_image(char *file_name, short **array) {
     // Flag for keeping track if height is negative indicating bottom up read
     int negative = 0;
 
-    int pad = 0;
+    // int pad = 0;
     int place = 0;
 
     long width = 0;
     long height = 0;
-    long position = 0;
 
     // Keep track of the number of colors used in the image
     long colors = 0;
@@ -339,7 +330,7 @@ int read_bmp_image(char *file_name, short **array) {
         height = bm_header.height;
     }
 
-    pad = calculate_pad(width);
+    // pad = calculate_pad(width);
 
     for (i = 0; i < height; ++i) {
         for (j = 0; j < width; ++j) {
@@ -412,7 +403,7 @@ int read_image_array(char *file_name, short **image_array) {
         success = 1;
     }
 
-    if (success = 0) {
+    if (success == 0) {
         printf("Could not read file\n");
         exit(1);
     }
@@ -420,20 +411,20 @@ int read_image_array(char *file_name, short **image_array) {
     return 1;
 }
 
-int print_image_array(short **image_array, long length, long width) {
-    int success = 0;
+void print_image_array(short **image_array, long length, long width) {
     int i;
     int j;
 
     for (i = 0; i < length; ++i) {
         for (j = 0; j < width; ++j) {
-            printf("%d ", image_array[i][j]);
+            if (j) {
+                printf(",");
+            }
+            printf("%d", image_array[i][j]);
         }
 
         printf("\n");
     }
-
-    return 1;
 }
 
 int create_grayscale_binary_file(short **image_array, long length, long width) {
