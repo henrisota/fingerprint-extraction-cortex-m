@@ -22,6 +22,8 @@ int preprocess(unsigned char **image, long length, long width, unsigned char **s
         printf("Finished preprocessing.\n");
     }
 
+    print_segmentation_array(*segmentation_array, *segmentation_array_size, length, width);
+
     print_image_array(image, length, width, OUTPUT_TO_FILE);
 
     success = 1;
