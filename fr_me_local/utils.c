@@ -126,6 +126,10 @@ int get_block_start_from_index(int i, int length, int width, int *block_start_ro
 }
 
 int clean_block(unsigned char **image, int block_index, long image_length, long image_width) {
+    return set_block(image, block_index, image_length, image_width, 0);
+}
+
+int set_block(unsigned char **image, int block_index, long image_length, long image_width, char intensity) {
     int i;
     int j;
     int block_start_row = 0;
@@ -145,10 +149,8 @@ int clean_block(unsigned char **image, int block_index, long image_length, long 
 
     for (i = block_start_row; i < block_start_row + curr_block_length; ++i) {
         for (j = block_start_col; j < block_start_col + curr_block_width; ++j) {
-            // printf("i: %d | j: %d\n", i, j);
             int pixel_pos = image_width * i + j;
-            // printf("setting %d | %d to 0\n", pixel_pos / MAX_IMAGE_WIDTH, pixel_pos % MAX_IMAGE_WIDTH);
-            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = 0;
+            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = intensity;
         }
     }
 

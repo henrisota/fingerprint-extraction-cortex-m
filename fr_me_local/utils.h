@@ -13,6 +13,7 @@ int get_cols_of_blocks(long width);
 
 int get_block_start_from_index(int i, int length, int width, int *block_start_row, int *block_start_col);
 
+int set_block(unsigned char **image, int block_index, long image_length, long image_width, char intensity);
 int clean_block(unsigned char **image, int block_index, long image_length, long image_width);
 
 #endif
