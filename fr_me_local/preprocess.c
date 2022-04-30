@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "enhance.h"
 #include "imageio.h"
 #include "preprocess.h"
 #include "segment.h"
@@ -15,6 +16,8 @@ int preprocess(unsigned char **image, long length, long width, unsigned char **s
     if (VERBOSE) {
         printf("Starting preprocessing.\n");
     }
+
+    enhance(image, length, width);
 
     *segmentation_array = segment(image, length, width, segmentation_array_size);
 
