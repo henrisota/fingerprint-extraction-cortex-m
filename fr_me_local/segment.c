@@ -245,7 +245,7 @@ unsigned char *segment(unsigned char **image, long length, long width, int *segm
     int j;
 
     if (VERBOSE) {
-        printf("Starting segmentation of image.");
+        printf("Starting segmentation of image.\n");
     }
 
     if (VERBOSE) {
@@ -319,8 +319,6 @@ unsigned char *segment(unsigned char **image, long length, long width, int *segm
     // and remove those blocks for which most of the surrounding neighbor blocks
     // are background blocks
     erode_lone_blocks(segmentation_array, *segmentation_array_size, no_blocks_rows, no_blocks_cols);
-
-    print_segmentation_array(segmentation_array, *segmentation_array_size, length, width);
 
     apply_segmentation_on_image(image, length, width, &segmentation_array, *segmentation_array_size);
 
