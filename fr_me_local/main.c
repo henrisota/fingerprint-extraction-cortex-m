@@ -18,8 +18,9 @@ int main(int argc, char *argv[]) {
     // Keep the grayscale image values
     unsigned char **image;
     // Keep the segmentation of the blocks of the image
-    unsigned char *block_segmentation;
-    int segmented_image_array_size;
+    unsigned char *segmentation_array;
+    int segmentation_array_size;
+    // Keep the extracted features (minutiae)
 
     if (argc < 2) {
         printf("Not enough parameters");
@@ -29,13 +30,14 @@ int main(int argc, char *argv[]) {
 
     image = read_grayscale_binary_file(name, &length, &width);
 
-    preprocess(image, length, width, &block_segmentation, &segmented_image_array_size);
+    preprocess(image, length, width, &segmentation_array, &segmentation_array_size);
 
-    // extract(image, length, width, block_segmentation);
+    extract(image, length, width, &segmentation_array, segmentation_array_size);
 
-    // Deallocate memory
-    free(block_segmentation);
+    // Deallocate memory of the segmentation array
+    free(segmentation_array);
 
+    // Deallocate memory of the image
     for (i = 0; i < length; ++i) {
         free(image[i]);
     }
