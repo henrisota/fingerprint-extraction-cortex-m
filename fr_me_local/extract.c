@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "config.h"
+#include "imageio.h"
 #include "segment.h"
 #include "utils.h"
 
@@ -228,6 +229,45 @@ int erode_lone_type_blocks(char block_type, unsigned char **segmentation_array, 
     return 1;
 }
 
+int apply_block_division_on_image(unsigned char **image, long image_length, long image_width, unsigned char **segmentation_array, int segmentation_array_size) {
+    int i;
+    int j;
+
+    if (VERBOSE) {
+        printf("Starting applying block division on image.\n");
+    }
+
+    int no_blocks_rows = get_rows_of_blocks(image_length);
+    int no_blocks_cols = get_cols_of_blocks(image_width);
+
+    for (i = 0; i < segmentation_array_size; ++i) {
+        char no_blocks_saved_in_char = 4;
+
+        if (i == segmentation_array_size - 1 && (no_blocks_rows * no_blocks_cols) % 4) {
+            no_blocks_saved_in_char = (no_blocks_rows * no_blocks_cols) % 4;
+        }
+
+        for (j = 0; j < no_blocks_saved_in_char; ++j) {
+            // Create mask at certain position in character to retrieve the
+            // segmentation result of the block from the char
+            char mask = 0b11 << (6 - 2 * j);
+            char block_code = (mask & (*segmentation_array)[i]) >> (6 - 2 * j);
+
+            if (block_code == TYPE_1_H_BLOCK) {
+                set_block(image, i * 4 + j, image_length, image_width, TYPE_1_BLOCK_OUTPUT_INTENSITY);
+            } else if (block_code == TYPE_2_V_BLOCK) {
+                set_block(image, i * 4 + j, image_length, image_width, TYPE_2_BLOCK_OUTPUT_INTENSITY);
+            }
+        }
+    }
+
+    if (VERBOSE) {
+        printf("Finished applying segmentation on image.\n");
+    }
+
+    return 1;
+}
+
 int extract(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size) {
     if (VERBOSE) {
         printf("Starting extraction of features\n");
@@ -245,6 +285,9 @@ int extract(unsigned char **image, long length, long width, unsigned char **segm
     erode_lone_type_blocks(TYPE_2_V_BLOCK, segmentation_array, segmentation_array_size, no_blocks_rows, no_blocks_cols);
 
     print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
+
+    // apply_block_division_on_image(image, length, width, segmentation_array, segmentation_array_size);
+    // print_image_array(image, length, width, OUTPUT_TO_FILE);
 
     if (VERBOSE) {
         printf("Finished extraction of features.\n");
