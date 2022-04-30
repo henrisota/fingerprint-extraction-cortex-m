@@ -3,6 +3,7 @@
 #include "config.h"
 #include "imageio.h"
 #include "segment.h"
+#include "thin.h"
 #include "utils.h"
 
 int divide_blocks_into_types(unsigned char **image, long image_length, long image_width, unsigned char **segmentation_array, int segmentation_array_size) {
@@ -262,7 +263,7 @@ int apply_block_division_on_image(unsigned char **image, long image_length, long
     }
 
     if (VERBOSE) {
-        printf("Finished applying segmentation on image.\n");
+        printf("Finished applying block division on image.\n");
     }
 
     return 1;
@@ -284,10 +285,13 @@ int extract(unsigned char **image, long length, long width, unsigned char **segm
     // Perform erosion on type 2 (vertical) blocks which are found between type 1 (horizontal) blocks
     erode_lone_type_blocks(TYPE_2_V_BLOCK, segmentation_array, segmentation_array_size, no_blocks_rows, no_blocks_cols);
 
+    // apply_block_division_on_image(image, length, width, segmentation_array, segmentation_array_size);
+
+    thin(image, length, width, segmentation_array, segmentation_array_size);
+
     print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
 
-    // apply_block_division_on_image(image, length, width, segmentation_array, segmentation_array_size);
-    // print_image_array(image, length, width, OUTPUT_TO_FILE);
+    print_image_array(image, length, width, OUTPUT_TO_FILE);
 
     if (VERBOSE) {
         printf("Finished extraction of features.\n");
