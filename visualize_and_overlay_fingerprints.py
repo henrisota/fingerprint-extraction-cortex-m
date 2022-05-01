@@ -56,7 +56,6 @@ def perform_extraction_and_overlay(source):
     # Move image to image reading project
     source_name = os.path.basename(source)
     destination = os.path.join(IMAGE_READING_PROJECT_DIRECTORY, source_name)
-    print(source_name)
     shutil.copyfile(source, destination)
 
     # Change to image reading project
@@ -64,7 +63,6 @@ def perform_extraction_and_overlay(source):
 
     # Run image reading project
     args = (os.path.join('.', IMAGE_READING_PROJECT_BINARY), source_name)
-    print(args)
 
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
     popen.wait()
@@ -84,7 +82,6 @@ def perform_extraction_and_overlay(source):
 
     # Run fingerprint extraction project
     args = (os.path.join('.', FINGERPRINT_EXTRACTION_PROJECT_BINARY), IMAGE_READING_PROJECT_BUILD_FILE)
-    print(args)
 
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
     popen.wait()
