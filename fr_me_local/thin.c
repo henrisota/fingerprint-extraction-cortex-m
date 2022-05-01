@@ -16,6 +16,12 @@ int thin_block_from_index(char block_type, unsigned char **image, int index, lon
     char min_pixel_dimension_index = -1;
     unsigned char min_pixel_value = 255;
 
+    char second_min_pixel_dimension_index = -1;
+    unsigned char second_min_pixel_value = 255;
+
+    char third_min_pixel_dimension_index = -1;
+    unsigned char third_min_pixel_value = 255;
+
     int block_start_row = 0;
     int block_start_col = 0;
 
@@ -48,23 +54,48 @@ int thin_block_from_index(char block_type, unsigned char **image, int index, lon
             min_pixel_dimension_index = -1;
             min_pixel_value = 255;
 
-            // Find the minimum value in the column, set it to RIDGE_INTENSITY
-            // in the image and set others to VALLEY_INTENSITY
+            second_min_pixel_dimension_index = -1;
+            second_min_pixel_value = 255;
+
+            third_min_pixel_dimension_index = -1;
+            third_min_pixel_value = 255;
+
+            // Find the top three minimum values in the col
+            // Set the first to RIDGE_INTENSITY and set the remaining two to
+            // WEAK_RIDGE_INTENSITY
             for (j = block_start_row; j < block_start_row + curr_block_length; ++j) {
                 pixel_pos = image_width * j + i;
                 intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
                 if (intensity < min_pixel_value) {
+                    third_min_pixel_dimension_index = second_min_pixel_dimension_index;
+                    second_min_pixel_dimension_index = min_pixel_dimension_index;
                     min_pixel_dimension_index = j - block_start_row;
+
+                    third_min_pixel_value = second_min_pixel_value;
+                    second_min_pixel_value = min_pixel_value;
                     min_pixel_value = intensity;
+                } else if (intensity > min_pixel_value && intensity < second_min_pixel_value) {
+                    third_min_pixel_dimension_index = second_min_pixel_dimension_index;
+                    second_min_pixel_dimension_index = j - block_start_row;
+
+                    third_min_pixel_value = second_min_pixel_value;
+                    second_min_pixel_value = intensity;
+                } else if (intensity > second_min_pixel_value && intensity < third_min_pixel_value) {
+                    third_min_pixel_dimension_index = j - block_start_row;
+
+                    third_min_pixel_value = intensity;
                 }
             }
 
+            // Set the main ridge pixel, weak ridge pixels and valley pixels for each col
             for (j = block_start_row; j < block_start_row + curr_block_length; ++j) {
                 pixel_pos = image_width * j + i;
 
                 if (j - block_start_row == min_pixel_dimension_index) {
                     image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = RIDGE_INTENSITY;
+                } else if (j - block_start_row == second_min_pixel_dimension_index || j - block_start_row == third_min_pixel_dimension_index) {
+                    image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = WEAK_RIDGE_INTENSITY;
                 } else {
                     image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = VALLEY_INTENSITY;
                 }
@@ -83,23 +114,48 @@ int thin_block_from_index(char block_type, unsigned char **image, int index, lon
             min_pixel_dimension_index = -1;
             min_pixel_value = 255;
 
-            // Find the minimum value in the row, set it to RIDGE_INTENSITY in
-            // the image and set others to VALLEY_INTENSITY
+            second_min_pixel_dimension_index = -1;
+            second_min_pixel_value = 255;
+
+            third_min_pixel_dimension_index = -1;
+            third_min_pixel_value = 255;
+
+            // Find the top three minimum values in the row
+            // Set the first to RIDGE_INTENSITY and set the remaining two to
+            // WEAK_RIDGE_INTENSITY. Set the remaining to VALLEY_INTENSITY
             for (j = block_start_col; j < block_start_col + curr_block_width; ++j) {
                 pixel_pos = image_width * i + j;
                 intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
                 if (intensity < min_pixel_value) {
+                    third_min_pixel_dimension_index = second_min_pixel_dimension_index;
+                    second_min_pixel_dimension_index = min_pixel_dimension_index;
                     min_pixel_dimension_index = j - block_start_col;
+
+                    third_min_pixel_value = second_min_pixel_value;
+                    second_min_pixel_value = min_pixel_value;
                     min_pixel_value = intensity;
+                } else if (intensity > min_pixel_value && intensity < second_min_pixel_value) {
+                    third_min_pixel_dimension_index = second_min_pixel_dimension_index;
+                    second_min_pixel_dimension_index = j - block_start_col;
+
+                    third_min_pixel_value = second_min_pixel_value;
+                    second_min_pixel_value = intensity;
+                } else if (intensity > second_min_pixel_value && intensity < third_min_pixel_value) {
+                    third_min_pixel_dimension_index = j - block_start_col;
+
+                    third_min_pixel_value = intensity;
                 }
             }
 
+            // Set the main ridge pixel, weak ridge pixels and valley pixels for each row
             for (j = block_start_col; j < block_start_col + curr_block_width; ++j) {
                 pixel_pos = image_width * i + j;
 
                 if (j - block_start_col == min_pixel_dimension_index) {
                     image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = RIDGE_INTENSITY;
+                } else if (j - block_start_col == second_min_pixel_dimension_index || j - block_start_col == third_min_pixel_dimension_index) {
+                    image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = WEAK_RIDGE_INTENSITY;
                 } else {
                     image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = VALLEY_INTENSITY;
                 }
@@ -111,8 +167,7 @@ int thin_block_from_index(char block_type, unsigned char **image, int index, lon
 }
 
 int thin(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size) {
-    int i;
-    int j;
+    int i, j;
 
     if (VERBOSE) {
         printf("Starting thinning of image.\n");
@@ -131,7 +186,7 @@ int thin(unsigned char **image, long length, long width, unsigned char **segment
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
             char block_code = (mask & (*segmentation_array)[i]) >> (6 - 2 * j);
 
             if (block_code != BACKGROUND_BLOCK) {
@@ -139,6 +194,8 @@ int thin(unsigned char **image, long length, long width, unsigned char **segment
             }
         }
     }
+
+    connect_ridges(image, length, width);
 
     if (VERBOSE) {
         printf("Finished thinning of image.\n");
