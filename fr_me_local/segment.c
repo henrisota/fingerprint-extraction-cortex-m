@@ -46,7 +46,7 @@ int erode_block_from_index(char block_type, unsigned char *segmentation_array, i
 
                     // Create mask at certain position in character to retrieve the
                     // segmentation result of the block from the char
-                    mask = 0b11 << (6 - 2 * (neighbor_index % 4));
+                    mask = BLOCK_MASK << (6 - 2 * (neighbor_index % 4));
 
                     if ((mask & segmentation_array[neighbor_index / 4]) >> (6 - 2 * (neighbor_index % 4)) == FOREGROUND_BLOCK) {
                         if (VERBOSE) {
@@ -113,7 +113,7 @@ int erode_lone_blocks(unsigned char *segmentation_array, int segmentation_array_
             for (j = 0; j < no_blocks_saved_in_char; ++j) {
                 // Create mask at certain position in character to retrieve the
                 // segmentation result of the block from the char
-                char mask = 0b11 << (6 - 2 * j);
+                char mask = BLOCK_MASK << (6 - 2 * j);
 
                 if (VERBOSE) {
                     if (VERBOSE == 2) {
@@ -186,7 +186,7 @@ int print_segmentation_array(unsigned char *segmentation_array, int segmentation
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
 
             printf("%d ", (mask & segmentation_array[i]) >> (6 - 2 * j));
 
@@ -225,7 +225,7 @@ int apply_segmentation_on_image(unsigned char **image, long image_length, long i
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
 
             if ((mask & (*segmentation_array)[i]) >> (6 - 2 * j) == BACKGROUND_BLOCK) {
                 clean_block(image, i * 4 + j, image_length, image_width);
@@ -302,7 +302,7 @@ unsigned char *segment(unsigned char **image, long length, long width, int *segm
 
             // Create mask at certain position in character to save the
             // segmentation  result of the block into the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
 
             // Set the corresponding 2 bits of the character corresponding to
             // the position of the block
