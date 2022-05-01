@@ -6,12 +6,12 @@
 #include "utils.h"
 
 int normalize(unsigned char **image, long length, long width, float image_mean, float image_variance) {
+    int i;
+    int j;
+
     if (VERBOSE) {
         printf("Starting image normalization.\n");
     }
-
-    int i;
-    int j;
 
     for (i = 0; i < length; ++i) {
         for (j = 0; j < width; ++j) {
@@ -49,6 +49,10 @@ int increase_contrast(unsigned char **image, long length, long width) {
     int difference = 0;
     int contrasted_intensity = 0;
 
+    if (VERBOSE) {
+        printf("Starting contrast enhancement.\n");
+    }
+
     // Iterate over the inner pixels of the image, avoiding the outer pixels
     for (i = half_block; i < length - half_block; ++i) {
         for (j = half_block; j < width - half_block; ++j) {
@@ -80,6 +84,10 @@ int increase_contrast(unsigned char **image, long length, long width) {
 
             image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = (unsigned char) contrasted_intensity;
         }
+    }
+
+    if (VERBOSE) {
+        printf("Finished contrast enhancement.\n");
     }
 
     return 1;
