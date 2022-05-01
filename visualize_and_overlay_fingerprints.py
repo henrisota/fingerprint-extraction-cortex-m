@@ -123,7 +123,7 @@ def perform_extraction_and_overlay(source):
 
     # Create overlaid image
     cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_overlaid.bmp',
-                cv2.addWeighted(base_fingerprint, 0.8, overlay_fingerprint, 0.2, 0))
+                cv2.addWeighted(base_fingerprint, 1.0, overlay_fingerprint, 0.4, 0))
 
     # Move back to main directory
     os.chdir('..')
