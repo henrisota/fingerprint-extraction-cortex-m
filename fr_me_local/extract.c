@@ -27,7 +27,7 @@ int divide_blocks_into_types(unsigned char **image, long image_length, long imag
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
 
             // Divide foreground blocks
             if ((mask & (*segmentation_array)[i]) >> (6 - 2 * j) == 1) {
@@ -145,7 +145,7 @@ int erode_lone_type_blocks(char block_type, unsigned char **segmentation_array, 
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            mask = 0b11 << (6 - 2 * j);
+            mask = BLOCK_MASK << (6 - 2 * j);
 
             // Perform erosion on given block types
             if ((mask & (*segmentation_array)[i]) >> (6 - 2 * j) == block_type) {
@@ -169,7 +169,7 @@ int erode_lone_type_blocks(char block_type, unsigned char **segmentation_array, 
                             if (neighbor_index >= 0 && neighbor_index < no_blocks) {
                                 // Create mask at certain position in character to retrieve the
                                 // segmentation result of the block from the char
-                                mask = 0b11 << (6 - 2 * (neighbor_index % 4));
+                                mask = BLOCK_MASK << (6 - 2 * (neighbor_index % 4));
 
                                 char neighbor_block_code = (mask & (*segmentation_array)[neighbor_index / 4]) >> (6 - 2 * (neighbor_index % 4));
 
@@ -251,7 +251,7 @@ int apply_block_division_on_image(unsigned char **image, long image_length, long
         for (j = 0; j < no_blocks_saved_in_char; ++j) {
             // Create mask at certain position in character to retrieve the
             // segmentation result of the block from the char
-            char mask = 0b11 << (6 - 2 * j);
+            char mask = BLOCK_MASK << (6 - 2 * j);
             char block_code = (mask & (*segmentation_array)[i]) >> (6 - 2 * j);
 
             if (block_code == TYPE_1_H_BLOCK) {
