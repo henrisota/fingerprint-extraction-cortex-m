@@ -166,6 +166,64 @@ int thin_block_from_index(char block_type, unsigned char **image, int index, lon
     return 1;
 }
 
+int connect_ridges(unsigned char **image, long length, long width) {
+    int i, j, k, l, m, n;
+    int pixel_pos;
+    int neighbor_pixel_pos;
+    int second_neighbor_pixel_pos;
+    int count_weak_second_neighbors;
+    unsigned char intensity;
+
+    if (VERBOSE) {
+        printf("Starting connecting ridges.\n");
+    }
+
+    // Iterate over all pixels except for those on the outer 2 pixel window frame
+    for (i = 2; i < length - 2; ++i) {
+        for (j = 2; j < width - 2; ++j) {
+            pixel_pos = width * i + j;
+            intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+
+            // Start connecting on ridge pixels
+            if (intensity == RIDGE_INTENSITY) {
+                // Iterate over the neighboring pixels
+                for (k = -1; k <= 1; ++k) {
+                    for (l = -1; l <= 1; ++l) {
+                        neighbor_pixel_pos = pixel_pos + width * k + l;
+                        intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+
+                        if (intensity == WEAK_RIDGE_INTENSITY) {
+                            count_weak_second_neighbors = 0;
+
+                            // Iterate over the neighbors of the weak ridge neighbor
+                            for (m = -1; m <= 1; ++m) {
+                                for (n = -1; n <= 1; ++n) {
+                                    second_neighbor_pixel_pos = neighbor_pixel_pos + width * m + n;
+                                    intensity = image[second_neighbor_pixel_pos / MAX_IMAGE_WIDTH][second_neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+
+                                    if (intensity == WEAK_RIDGE_INTENSITY) {
+                                        ++count_weak_second_neighbors;
+                                    }
+                                }
+                            }
+
+                            if (count_weak_second_neighbors > 1) {
+                                image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] = RIDGE_INTENSITY;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (VERBOSE) {
+        printf("Finished connecting ridges.\n");
+    }
+
+    return 1;
+}
+
 int thin(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size) {
     int i, j;
 
