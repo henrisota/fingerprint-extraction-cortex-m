@@ -42,7 +42,7 @@ int erode_block_from_index(char block_type, unsigned char *segmentation_array, i
                 neighbor_index = index + i * no_blocks_cols + j;
 
                 if (neighbor_index >= 0 && neighbor_index < no_blocks) {
-                    count_neighbors++;
+                    ++count_neighbors;
 
                     // Create mask at certain position in character to retrieve the
                     // segmentation result of the block from the char
