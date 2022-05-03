@@ -21,8 +21,8 @@ float calculate_image_mean(unsigned char **image, long length, long width) {
     for (i = 0; i < length; ++i) {
         for (j = 0; j < width; ++j) {
             int pixel_pos = width * i + j;
-            float intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
-            mean += intensity;
+            unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+            mean += (float) intensity;
         }
     }
 
@@ -39,8 +39,8 @@ float calculate_image_variance(unsigned char **image, float mean, long length, l
     for (i = 0; i < length; ++i) {
         for (j = 0; j < width; ++j) {
             int pixel_pos = width * i + j;
-            float intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
-            variance += (intensity - mean) * (intensity - mean);
+            unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+            variance += ((int) intensity - (int) mean) * ((int) intensity - (int) mean);
         }
     }
 
@@ -67,8 +67,8 @@ float calculate_block_mean(unsigned char **image, long length, long width, int b
     for (i = block_start_row; i < block_start_row + curr_block_length; ++i) {
         for (j = block_start_col; j < block_start_col + curr_block_width; ++j) {
             int pixel_pos = width * i + j;
-            float intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
-            mean += intensity;
+            unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+            mean += (int) intensity;
         }
     }
 
@@ -95,8 +95,8 @@ float calculate_block_variance(unsigned char **image, long length, long width, i
     for (i = block_start_row; i < block_start_row + curr_block_length; ++i) {
         for (j = block_start_col; j < block_start_col + curr_block_width; ++j) {
             int pixel_pos = width * i + j;
-            float intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
-            variance += (intensity - mean) * (intensity - mean);
+            unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+            variance += ((int) intensity - mean) * ((int) intensity - mean);
         }
     }
 
@@ -129,7 +129,7 @@ int clean_block(unsigned char **image, int block_index, long image_length, long 
     return set_block(image, block_index, image_length, image_width, 0);
 }
 
-int set_block(unsigned char **image, int block_index, long image_length, long image_width, char intensity) {
+int set_block(unsigned char **image, int block_index, long image_length, long image_width, unsigned char intensity) {
     int i;
     int j;
     int block_start_row = 0;
