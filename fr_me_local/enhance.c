@@ -16,11 +16,11 @@ int normalize(unsigned char **image, long length, long width, float image_mean, 
     for (i = 0; i < length; ++i) {
         for (j = 0; j < width; ++j) {
             int pixel_pos = width * i + j;
-            float intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+            unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
-            float scaled_variance = sqrtf(NORMALIZATION_DESIRED_VARIANCE * (intensity - image_mean) * (intensity - image_mean) / image_variance);
+            float scaled_variance = sqrtf(NORMALIZATION_DESIRED_VARIANCE * ((int) intensity - image_mean) * ((int) intensity - image_mean) / image_variance);
 
-            if (intensity > image_mean) {
+            if ((int) intensity > image_mean) {
                 image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = (int) (NORMALIZATION_DESIRED_MEAN + scaled_variance) > 255 ? 255 : (int) (NORMALIZATION_DESIRED_MEAN + scaled_variance);
             } else {
                 image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = (int) (NORMALIZATION_DESIRED_MEAN - scaled_variance) < 0 ? 0 : (int) (NORMALIZATION_DESIRED_MEAN - scaled_variance);
@@ -44,7 +44,7 @@ int increase_contrast(unsigned char **image, long length, long width) {
     char half_block = CONTRAST_BLOCK_SIZE / 2;
 
     int pixel_pos;
-    int intensity;
+    unsigned char intensity;
     float mean;
     int difference = 0;
     int contrasted_intensity = 0;
@@ -63,7 +63,7 @@ int increase_contrast(unsigned char **image, long length, long width) {
                     pixel_pos = width * (i + k) + (j + l);
                     intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
-                    mean += intensity;
+                    mean += (int) intensity;
                 }
             }
 
@@ -72,7 +72,7 @@ int increase_contrast(unsigned char **image, long length, long width) {
             pixel_pos = width * i + j;
             intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
-            difference = (intensity - (int) mean);
+            difference = ((int) intensity - (int) mean);
 
             contrasted_intensity = mean + CONTRAST_CONSTANT * difference;
 
