@@ -65,7 +65,7 @@ int divide_blocks_into_types(unsigned char **image, long image_length, long imag
                 for (r = block_start_row; r < block_start_row + curr_block_length; ++r) {
                     for (c = block_start_col; c < block_start_col + curr_block_width; ++c) {
                         int pixel_pos = image_width * r + c;
-                        char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
+                        unsigned char intensity = image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH];
 
                         sum_of_rows[r - block_start_row] += intensity;
                         sum_of_cols[c - block_start_col] += intensity;
@@ -174,7 +174,7 @@ int erode_lone_type_blocks(char block_type, unsigned char **segmentation_array, 
                                 char neighbor_block_code = (mask & (*segmentation_array)[neighbor_index / 4]) >> (6 - 2 * (neighbor_index % 4));
 
                                 if (neighbor_block_code == TYPE_1_H_BLOCK) {
-                                    count_neighbors++;
+                                    ++count_neighbors;
 
                                     if (VERBOSE) {
                                         if (VERBOSE == 2) {
@@ -184,7 +184,7 @@ int erode_lone_type_blocks(char block_type, unsigned char **segmentation_array, 
 
                                     count_neighbor_type_1_blocks += 1;
                                 } else if (neighbor_block_code == TYPE_2_V_BLOCK) {
-                                    count_neighbors++;
+                                    ++count_neighbors;
 
                                     if (VERBOSE) {
                                         if (VERBOSE == 2) {
