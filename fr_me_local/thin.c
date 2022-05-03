@@ -496,6 +496,233 @@ int iterative_thin(unsigned char **image, long length, long width) {
     return 1;
 }
 
+int iterative_block_thin(unsigned char **image, long length, long width) {
+    unsigned char block[ITERATIVE_THIN_BLOCK_ROW_SIZE][ITERATIVE_THIN_BLOCK_COL_SIZE] = {0};
+
+    int bi, bj;
+    int i, j, a, b;
+    int iterations = THINNING_ITERATIONS;
+    int count = 0;
+    int count_thinned_pixels = 1;
+    int pixel_pos = 0;
+    int adjacent_pixel_pos = 0;
+    int neighbor_pixel_pos = 0;
+    int no_blocks_row = length / ITERATIVE_THIN_BLOCK_ROW_SIZE;
+    int no_blocks_col = width / ITERATIVE_THIN_BLOCK_COL_SIZE;
+    int block_start_row;
+    int block_start_col;
+
+    if (VERBOSE) {
+        printf("Starting iterative block thinning on image.\n");
+    }
+
+    if (VERBOSE) {
+        if (VERBOSE == 2) {
+            printf("Reported number of thinned pixels may not be accurate due to the same pixel reported to be thinned during scans.\n");
+        }
+    }
+
+    while (iterations--) {
+        count_thinned_pixels = 0;
+
+        block_start_row = (length - (int) no_blocks_row * ITERATIVE_THIN_BLOCK_ROW_SIZE) / 2;
+
+        for (bi = 0; bi < no_blocks_row; ++bi) {
+            block_start_col = (width - (int) no_blocks_col * ITERATIVE_THIN_BLOCK_COL_SIZE) / 2;
+
+            for (bj = 0; bj < no_blocks_col; ++bj) {
+                // Clean up block array
+                for (i = 0; i < ITERATIVE_THIN_BLOCK_ROW_SIZE; ++i) {
+                    for (j = 0; j < ITERATIVE_THIN_BLOCK_COL_SIZE; ++j) {
+                        block[i][j] = 0;
+                    }
+                }
+
+                if (VERBOSE) {
+                    if (VERBOSE == 2) {
+                        printf("Block start row and col: (%d | %d)\n", block_start_row, block_start_col);
+                    }
+                }
+
+                // Scan block from left to right looking for a transition from valley to
+                // ridge intensity
+                for (i = block_start_row + 1; i < block_start_row + ITERATIVE_THIN_BLOCK_ROW_SIZE - 1; ++i) {
+                    for (j = block_start_col + 1; j < block_start_col + ITERATIVE_THIN_BLOCK_COL_SIZE - 1; ++j) {
+                        pixel_pos = width * i + j;
+                        adjacent_pixel_pos = pixel_pos - 1;
+
+                        // Check if there is a transition
+                        if (image[adjacent_pixel_pos / MAX_IMAGE_WIDTH][adjacent_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY &&
+                            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                            count = 0;
+
+                            // Iterate over the neighbors of this pixel
+                            // While counting the number of neighbors that represent a valley
+                            for (a = -1; a <= 1; ++a) {
+                                for (b = -1; b <= 1; ++b) {
+                                    neighbor_pixel_pos = pixel_pos + width * a + b;
+
+                                    if (image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY) {
+                                        ++count;
+                                    }
+                                }
+                            }
+
+                            // Set pixel to 1 in block array to mark for thinning
+                            if (count > THINNING_VALLEY_NEIGHBORS_MIN_THRESHOLD && count < THINNING_VALLEY_NEIGHBORS_MAX_THRESHOLD) {
+                                if (can_thin(image, width, i, j)) {
+                                    block[i - block_start_row][j - block_start_col] = 1;
+                                    ++count_thinned_pixels;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Scan block from right to left looking for a transition from valley to
+                // ridge intensity
+                // Perform this by reading left to right and looking for a ridge to
+                // valley transition
+                for (i = block_start_row + 1; i < block_start_row + ITERATIVE_THIN_BLOCK_ROW_SIZE - 1; ++i) {
+                    for (j = block_start_col + 1; j < block_start_col + ITERATIVE_THIN_BLOCK_COL_SIZE - 1; ++j) {
+                        pixel_pos = width * i + j;
+                        adjacent_pixel_pos = pixel_pos - 1;
+
+                        if (block[i - block_start_row][j - block_start_col] == 1) {
+                            continue;
+                        }
+
+                        // Check if there is a transition
+                        if (image[adjacent_pixel_pos / MAX_IMAGE_WIDTH][adjacent_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY &&
+                            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                            count = 0;
+
+                            for (a = -1; a <= 1; ++a) {
+                                for (b = -1; b <= 1; ++b) {
+                                    neighbor_pixel_pos = pixel_pos + width * a + b;
+
+                                    if (image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY) {
+                                        ++count;
+                                    }
+                                }
+                            }
+
+                            // Set pixel to 1 in block array to mark for thinning
+                            if (count > THINNING_VALLEY_NEIGHBORS_MIN_THRESHOLD && count < THINNING_VALLEY_NEIGHBORS_MAX_THRESHOLD) {
+                                if (can_thin(image, width, i, j)) {
+                                    block[i - block_start_row][j - block_start_col] = 1;
+                                    ++count_thinned_pixels;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Scan block from top to bottom looking for a transition from valley
+                // to ridge intensity
+                for (j = block_start_col + 1; j < block_start_col + ITERATIVE_THIN_BLOCK_COL_SIZE - 1; ++j) {
+                    for (i = block_start_row + 1; i < block_start_row + ITERATIVE_THIN_BLOCK_ROW_SIZE - 1; ++i) {
+                        pixel_pos = width * i + j;
+                        adjacent_pixel_pos = pixel_pos - width;
+
+                        if (block[i - block_start_row][j - block_start_col] == 1) {
+                            continue;
+                        }
+
+                        // Check if there is a transition
+                        if (image[adjacent_pixel_pos / MAX_IMAGE_WIDTH][adjacent_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY &&
+                            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                            count = 0;
+
+                            for (a = -1; a <= 1; ++a) {
+                                for (b = -1; b <= 1; ++b) {
+                                    neighbor_pixel_pos = pixel_pos + width * a + b;
+
+                                    if (image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY) {
+                                        ++count;
+                                    }
+                                }
+                            }
+
+                            // Set pixel to 1 in block array to mark for thinning
+                            if (count > THINNING_VALLEY_NEIGHBORS_MIN_THRESHOLD && count < THINNING_VALLEY_NEIGHBORS_MAX_THRESHOLD) {
+                                if (can_thin(image, width, i, j)) {
+                                    block[i - block_start_row][j - block_start_col] = 1;
+                                    ++count_thinned_pixels;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Scan block from bottom to top looking for a transition from valley
+                // to ridge intensity
+                // Perform this by reading top to bottom and looking for a ridge to
+                // valley transition
+                for (j = block_start_col + 1; j < block_start_col + ITERATIVE_THIN_BLOCK_COL_SIZE - 1; ++j) {
+                    for (i = block_start_row + 1; i < block_start_row + ITERATIVE_THIN_BLOCK_ROW_SIZE - 1; ++i) {
+                        pixel_pos = width * i + j;
+                        adjacent_pixel_pos = pixel_pos + width;
+
+                        if (block[i - block_start_row][j - block_start_col] == 1) {
+                            continue;
+                        }
+
+                        if (image[adjacent_pixel_pos / MAX_IMAGE_WIDTH][adjacent_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY &&
+                            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                            count = 0;
+
+                            for (a = -1; a <= 1; ++a) {
+                                for (b = -1; b <= 1; ++b) {
+                                    neighbor_pixel_pos = pixel_pos + width * a + b;
+
+                                    if (image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY) {
+                                        ++count;
+                                    }
+                                }
+                            }
+
+                            // Set pixel to 1 in block array to mark for thinning
+                            if (count > THINNING_VALLEY_NEIGHBORS_MIN_THRESHOLD && count < THINNING_VALLEY_NEIGHBORS_MAX_THRESHOLD) {
+                                if (can_thin(image, width, i, j)) {
+                                    block[i - block_start_row][j - block_start_col] = 1;
+                                    ++count_thinned_pixels;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Thin based on the marked block in block array
+                for (i = 1; i < ITERATIVE_THIN_BLOCK_ROW_SIZE - 1; ++i) {
+                    for (j = 1; j < ITERATIVE_THIN_BLOCK_COL_SIZE - 1; ++j) {
+                        if (block[i][j] == 1) {
+                            pixel_pos = width * (block_start_row + i) + (block_start_col + j);
+                            image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = VALLEY_INTENSITY;
+                        }
+                    }
+                }
+
+                if (VERBOSE) {
+                    if (VERBOSE == 2) {
+                        printf("Thinned %d pixels.\n", count_thinned_pixels);
+                    }
+                }
+
+                block_start_col += ZS_THINNING_BLOCK_COL_SIZE;
+            }
+
+            block_start_row += ZS_THINNING_BLOCK_ROW_SIZE;
+        }
+    }
+
+    if (VERBOSE) {
+        printf("Finished iterative block thinning on image.\n");
+    }
+
+    return 1;
+}
+
 int iterative_zhang_suen_block_thin(unsigned char **image, long length, long width) {
     unsigned char block[ZS_THINNING_BLOCK_ROW_SIZE][ZS_THINNING_BLOCK_COL_SIZE] = {0};
 
@@ -588,7 +815,7 @@ int iterative_zhang_suen_block_thin(unsigned char **image, long length, long wid
                                 // Calculate number of valley to ridge transitions
                                 // between neighbors in clockwise fashion
                                 for (d = 0; d < 8; ++d) {
-                                    neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[k] + transitions_col_positions[d];
+                                    neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d] + transitions_col_positions[d];
                                     successive_neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d + 1] + transitions_col_positions[d + 1];
 
                                     // Check for valley to ridge transition
@@ -796,17 +1023,13 @@ int iterative_modified_zhang_suen_thin(unsigned char **image, long length, long 
                         // Calculate number of valley to ridge transitions
                         // between neighbors in clockwise fashion
                         for (d = 0; d < 8; ++d) {
-                            neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[k] + transitions_col_positions[d];
+                            neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d] + transitions_col_positions[d];
                             successive_neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d + 1] + transitions_col_positions[d + 1];
 
                             // Check for valley to ridge transition
                             if (image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH] == VALLEY_INTENSITY &&
                                 image[successive_neighbor_pixel_pos / MAX_IMAGE_WIDTH][successive_neighbor_pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
                                 ++A;
-                                // Skip the next position due to knowing
-                                // that the successive pixel position will
-                                // be a ridge pixel
-                                ++d;
                             }
                         }
 
@@ -1034,7 +1257,7 @@ int iterative_modified_zhang_suen_thin(unsigned char **image, long length, long 
     return 1;
 }
 
-int iterative_modifed_zhang_suen_block_thin(unsigned char **image, long length, long width) {
+int iterative_modified_zhang_suen_block_thin(unsigned char **image, long length, long width) {
     unsigned char block[MOD_ZS_THINNING_BLOCK_ROW_SIZE][MOD_ZS_THINNING_BLOCK_COL_SIZE] = {0};
 
     int i, j, k, l, d;
@@ -1138,7 +1361,7 @@ int iterative_modifed_zhang_suen_block_thin(unsigned char **image, long length, 
                                 // Calculate number of valley to ridge transitions
                                 // between neighbors in clockwise fashion
                                 for (d = 0; d < 8; ++d) {
-                                    neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[k] + transitions_col_positions[d];
+                                    neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d] + transitions_col_positions[d];
                                     successive_neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d + 1] + transitions_col_positions[d + 1];
 
                                     // Check for valley to ridge transition
@@ -1425,6 +1648,7 @@ int thin(unsigned char **image, long length, long width, unsigned char **segment
     clean_weak_ridges(image, length, width);
 
     iterative_thin(image, length, width);
+    // iterative_block_thin(image, length, width);
     // iterative_zhang_suen_block_thin(image, length, width);
     // iterative_modified_zhang_suen_thin(image, length, width);
     // iterative_modified_zhang_suen_block_thin(image, length, width);
