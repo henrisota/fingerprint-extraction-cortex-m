@@ -6,6 +6,29 @@
 #include "thin.h"
 #include "utils.h"
 
+#define RIDGE_ENDING      1
+#define RIDGE_BIFURCATION 2
+
+#define P2_X -1
+#define P2_Y 0
+#define P3_X -1
+#define P3_Y 1
+#define P4_X 0
+#define P4_Y 1
+#define P5_X 1
+#define P5_Y 1
+#define P6_X 1
+#define P6_Y 0
+#define P7_X 1
+#define P7_Y -1
+#define P8_X 0
+#define P8_Y -1
+#define P9_X -1
+#define P9_Y -1
+
+const char transitions_row_positions[9] = {P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X};
+const char transitions_col_positions[9] = {P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y};
+
 int divide_blocks_into_types(unsigned char **image, long image_length, long image_width, unsigned char **segmentation_array, int segmentation_array_size) {
     int i;
     int j;
@@ -269,6 +292,84 @@ int apply_block_division_on_image(unsigned char **image, long image_length, long
     return 1;
 }
 
+int crossing_number(unsigned char **image, long width, int i, int j) {
+    int cn = 0;
+    int pixel_pos = width * i + j;
+    int neighbor_pixel_pos;
+    int successive_neighbor_pixel_pos;
+    unsigned char neighbor_pixel_intensity;
+    unsigned char successive_neighbor_pixel_intensity;
+    int d;
+
+    // Calculate number of valley to ridge or vice versa transitions
+    // between neighbors in clockwise fashion
+    for (d = 0; d < 8; ++d) {
+        neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d] + transitions_col_positions[d];
+        successive_neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d + 1] + transitions_col_positions[d + 1];
+
+        neighbor_pixel_intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+        successive_neighbor_pixel_intensity = image[successive_neighbor_pixel_pos / MAX_IMAGE_WIDTH][successive_neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+
+        // Check for valley to ridge or vice versatransition
+        if ((neighbor_pixel_intensity == VALLEY_INTENSITY && successive_neighbor_pixel_intensity == RIDGE_INTENSITY) ||
+            (neighbor_pixel_intensity == RIDGE_INTENSITY && successive_neighbor_pixel_intensity == VALLEY_INTENSITY)) {
+            ++cn;
+        }
+    }
+
+    cn >>= 1;
+
+    return cn;
+}
+
+int extract_minutiae(unsigned char **image, long length, long width) {
+    int i, j;
+    int pixel_pos;
+    int cn;
+
+    if (VERBOSE) {
+        printf("Starting extraction using Crossing Number concept.\n");
+    }
+
+    FILE *fp;
+
+    fp = fopen("fingerprint_minutiae.csv", "w+");
+
+    if (fp == NULL) {
+        printf("Output file could not be created or opened and rewritten.\n");
+        return 0;
+    }
+
+    for (i = 1; i < length - 1; ++i) {
+        for (j = 1; j < width - 1; ++j) {
+            pixel_pos = width * i + j;
+
+            if (image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                cn = crossing_number(image, width, i, j);
+
+                if (cn == 1) {
+                    printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
+                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
+
+                } else if (cn == 3) {
+                    printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
+                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
+                }
+            }
+        }
+    }
+
+    fputc('\n', fp);
+
+    fclose(fp);
+
+    if (VERBOSE) {
+        printf("Finished extraction using Crossing Number concept.\n");
+    }
+
+    return 1;
+}
+
 int extract(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size) {
     if (VERBOSE) {
         printf("Starting extraction of features\n");
@@ -292,6 +393,8 @@ int extract(unsigned char **image, long length, long width, unsigned char **segm
     print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
 
     print_image_array(image, length, width, OUTPUT_TO_FILE);
+
+    extract_minutiae(image, length, width);
 
     if (VERBOSE) {
         printf("Finished extraction of features.\n");
