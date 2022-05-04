@@ -1,10 +1,14 @@
 import cv2
+
 import numpy as np
 import os
 import shutil
 import subprocess
 
-from PIL import Image
+from PIL import Image, ImageOps
+
+RIDGE_ENDING_COLOR = (255, 0, 0)
+RIDGE_BIFURCATION_COLOR = (0, 255, 255)
 
 FINGERPRINTS_DIRECTORY = 'fingerprints'
 OUTPUT_DIRECTORY = 'fingerprints_processed'
@@ -12,6 +16,7 @@ OUTPUT_DIRECTORY = 'fingerprints_processed'
 FINGERPRINT_EXTRACTION_PROJECT_DIRECTORY = 'fr_me_local'
 FINGERPRINT_EXTRACTION_PROJECT_BINARY = 'main'
 FINGERPRINT_EXTRACTION_PROJECT_BUILD_FILE = 'binary_image_out.csv'
+FINGERPRINT_EXTRACTION_PROJECT_MINUTIAE_FILE = 'fingerprint_minutiae.csv'
 
 IMAGE_READING_PROJECT_DIRECTORY = 'image_read'
 IMAGE_READING_PROJECT_BINARY = 'main'
@@ -91,11 +96,19 @@ def perform_extraction_and_overlay(source):
     destination = os.path.join('..', OUTPUT_DIRECTORY, output_file_name)
     shutil.copyfile(FINGERPRINT_EXTRACTION_PROJECT_BUILD_FILE, destination)
 
+    # Move minutiae extraction build file to output directory
+    minutiae_output_file_name = os.path.splitext(source_name)[0] + '_minutiae.csv'
+    destination = os.path.join('..', OUTPUT_DIRECTORY, minutiae_output_file_name)
+    shutil.copyfile(FINGERPRINT_EXTRACTION_PROJECT_MINUTIAE_FILE, destination)
+
     # Remove input file to fingerprint extraction project
     os.remove(IMAGE_READING_PROJECT_BUILD_FILE)
 
     # Remove build file from fingerprint extraction project
     os.remove(FINGERPRINT_EXTRACTION_PROJECT_BUILD_FILE)
+
+    # Remove minutiae extraction build file from fingerprint extraction project
+    os.remove(FINGERPRINT_EXTRACTION_PROJECT_MINUTIAE_FILE)
 
     # Change to output directory
     os.chdir(os.path.join('..', OUTPUT_DIRECTORY))
@@ -121,6 +134,30 @@ def perform_extraction_and_overlay(source):
     # Create overlaid image
     cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_overlaid.bmp',
                 cv2.addWeighted(base_fingerprint, 1.0, overlay_fingerprint, 0.4, 0))
+
+    # Load extracted minutiae data
+    minutiae_data = np.genfromtxt(minutiae_output_file_name, delimiter=',')
+
+    extracted_minutiae_img = Image.fromarray(np.zeros((300, 300, 3)), 'RGB')
+    extracted_minutiae_img_pixels = extracted_minutiae_img.load()
+
+    for minutiae in minutiae_data:
+        if minutiae[3] == 1:
+            # Ridge ending minutiae
+            extracted_minutiae_img_pixels[minutiae[1], minutiae[0]] = RIDGE_ENDING_COLOR
+        else:
+            # Ridge bifurcation minutiae
+            extracted_minutiae_img_pixels[minutiae[1], minutiae[0]] = RIDGE_BIFURCATION_COLOR
+
+    # Invert image
+    ImageOps.invert(extracted_minutiae_img)
+
+    extracted_minutiae_img_file_name = f'{os.path.splitext(source_name)[0]}_minutiae_extracted.png'
+    extracted_minutiae_img.save(extracted_minutiae_img_file_name)
+
+    # Create overlaid image with extracted minutiae
+    cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_minutiae_overlaid.png', cv2.addWeighted(
+        base_fingerprint, 0.8, cv2.imread(extracted_minutiae_img_file_name), 0.4, 0))
 
     # Move back to main directory
     os.chdir('..')
