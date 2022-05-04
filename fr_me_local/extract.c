@@ -292,9 +292,8 @@ int apply_block_division_on_image(unsigned char **image, long image_length, long
     return 1;
 }
 
-int crossing_number(unsigned char **image, long width, int i, int j) {
+int crossing_number(unsigned char **image, long width, int pixel_pos, int *neighbor_number) {
     int cn = 0;
-    int pixel_pos = width * i + j;
     int neighbor_pixel_pos;
     int successive_neighbor_pixel_pos;
     unsigned char neighbor_pixel_intensity;
@@ -310,7 +309,11 @@ int crossing_number(unsigned char **image, long width, int i, int j) {
         neighbor_pixel_intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
         successive_neighbor_pixel_intensity = image[successive_neighbor_pixel_pos / MAX_IMAGE_WIDTH][successive_neighbor_pixel_pos % MAX_IMAGE_WIDTH];
 
-        // Check for valley to ridge or vice versatransition
+        if (neighbor_pixel_intensity == RIDGE_INTENSITY) {
+            (*neighbor_number) += 1;
+        }
+
+        // Check for valley to ridge or vice versa transition
         if ((neighbor_pixel_intensity == VALLEY_INTENSITY && successive_neighbor_pixel_intensity == RIDGE_INTENSITY) ||
             (neighbor_pixel_intensity == RIDGE_INTENSITY && successive_neighbor_pixel_intensity == VALLEY_INTENSITY)) {
             ++cn;
@@ -326,6 +329,7 @@ int extract_minutiae(unsigned char **image, long length, long width) {
     int i, j;
     int pixel_pos;
     int cn;
+    int neighbor_number;
 
     if (VERBOSE) {
         printf("Starting extraction using Crossing Number concept.\n");
@@ -345,13 +349,13 @@ int extract_minutiae(unsigned char **image, long length, long width) {
             pixel_pos = width * i + j;
 
             if (image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
-                cn = crossing_number(image, width, i, j);
+                neighbor_number = 0;
+                cn = crossing_number(image, width, pixel_pos, &neighbor_number);
 
-                if (cn == 1) {
+                if (neighbor_number == 1 && cn == 1) {
                     printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
                     fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
-
-                } else if (cn == 3) {
+                } else if (neighbor_number == 3 && cn == 3) {
                     printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
                     fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
                 }
