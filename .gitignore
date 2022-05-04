@@ -51,8 +51,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Build images
+# Input and output files
 *.bmp
+*.png
 *.gbf
 *.csv
 
