@@ -1,5 +1,4 @@
 import cv2
-
 import numpy as np
 import os
 import shutil
@@ -138,7 +137,7 @@ def perform_extraction_and_overlay(source):
     # Load extracted minutiae data
     minutiae_data = np.genfromtxt(minutiae_output_file_name, delimiter=',')
 
-    extracted_minutiae_img = Image.fromarray(np.zeros((300, 300, 3)), 'RGB')
+    extracted_minutiae_img = Image.fromarray(np.zeros((300, 300)), 'RGB')
     extracted_minutiae_img_pixels = extracted_minutiae_img.load()
 
     for minutiae in minutiae_data:
@@ -150,7 +149,7 @@ def perform_extraction_and_overlay(source):
             extracted_minutiae_img_pixels[minutiae[1], minutiae[0]] = RIDGE_BIFURCATION_COLOR
 
     # Invert image
-    ImageOps.invert(extracted_minutiae_img)
+    extracted_minutiae_img = ImageOps.invert(extracted_minutiae_img)
 
     extracted_minutiae_img_file_name = f'{os.path.splitext(source_name)[0]}_minutiae_extracted.png'
     extracted_minutiae_img.save(extracted_minutiae_img_file_name)
