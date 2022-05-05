@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "imageio.h"
+#include "orientation.h"
 #include "segment.h"
 #include "thin.h"
 #include "utils.h"
@@ -325,15 +326,18 @@ int crossing_number(unsigned char **image, long width, int pixel_pos, int *neigh
     return cn;
 }
 
-int extract_minutiae(unsigned char **image, long length, long width) {
+int extract_minutiae(unsigned char **image, long length, long width, unsigned char *orientation_array, int orientation_array_size) {
     int i, j;
     int pixel_pos;
     int cn;
     int neighbor_number;
+    int block_orientation;
 
     if (VERBOSE) {
         printf("Starting extraction using Crossing Number concept.\n");
     }
+
+    int no_blocks_cols = get_cols_of_blocks(width);
 
     FILE *fp;
 
@@ -352,12 +356,14 @@ int extract_minutiae(unsigned char **image, long length, long width) {
                 neighbor_number = 0;
                 cn = crossing_number(image, width, pixel_pos, &neighbor_number);
 
+                block_orientation = orientation_array[(i / BLOCK_ROW_SIZE) * no_blocks_cols + (j / BLOCK_COL_SIZE)];
+
                 if (neighbor_number == 1 && cn == 1) {
-                    printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
-                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_ENDING);
+                    printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
+                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
                 } else if (neighbor_number == 3 && cn == 3) {
-                    printf("%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
-                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, 0, RIDGE_BIFURCATION);
+                    printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
+                    fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
                 }
             }
         }
@@ -374,7 +380,7 @@ int extract_minutiae(unsigned char **image, long length, long width) {
     return 1;
 }
 
-int extract(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size) {
+int extract(unsigned char **image, long length, long width, unsigned char **segmentation_array, int segmentation_array_size, unsigned char **orientation_array, int *orientation_array_size) {
     if (VERBOSE) {
         printf("Starting extraction of features\n");
     }
@@ -392,13 +398,17 @@ int extract(unsigned char **image, long length, long width, unsigned char **segm
 
     // apply_block_division_on_image(image, length, width, segmentation_array, segmentation_array_size);
 
+    *orientation_array = calculate_local_orientation(image, length, width, segmentation_array, segmentation_array_size, orientation_array_size);
+
     thin(image, length, width, segmentation_array, segmentation_array_size);
 
     print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
 
+    // print_orientation_array(*orientation_array, *orientation_array_size, length, width);
+
     print_image_array(image, length, width, OUTPUT_TO_FILE);
 
-    extract_minutiae(image, length, width);
+    extract_minutiae(image, length, width, *orientation_array, *orientation_array_size);
 
     if (VERBOSE) {
         printf("Finished extraction of features.\n");
