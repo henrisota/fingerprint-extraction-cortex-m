@@ -1647,9 +1647,9 @@ int thin(unsigned char **image, long length, long width, unsigned char **segment
 
     clean_weak_ridges(image, length, width);
 
-    iterative_thin(image, length, width);
+    // iterative_thin(image, length, width);
     // iterative_block_thin(image, length, width);
-    // iterative_zhang_suen_block_thin(image, length, width);
+    iterative_zhang_suen_block_thin(image, length, width);
     // iterative_modified_zhang_suen_thin(image, length, width);
     // iterative_modified_zhang_suen_block_thin(image, length, width);
 
