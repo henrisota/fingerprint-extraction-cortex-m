@@ -4,10 +4,19 @@ import os
 import shutil
 import subprocess
 
-from PIL import Image, ImageOps
+from math import cos, sin, pi
+from PIL import Image, ImageOps, ImageDraw
 
-RIDGE_ENDING_COLOR = (255, 0, 0)
-RIDGE_BIFURCATION_COLOR = (0, 255, 255)
+# Inverted red
+RIDGE_ENDING_COLOR = (0, 255, 255)
+RIDGE_ENDING_COLOR_INVERTED = (255 - RIDGE_ENDING_COLOR[0], 255 - RIDGE_ENDING_COLOR[1], 255 - RIDGE_ENDING_COLOR[2])
+# Inverted blue
+RIDGE_BIFURCATION_COLOR = (255, 255, 0)
+RIDGE_BIFURCATION_COLOR_INVERTED = (
+    255 - RIDGE_BIFURCATION_COLOR[0], 255 - RIDGE_BIFURCATION_COLOR[1], 255 - RIDGE_BIFURCATION_COLOR[2])
+
+
+ORIENTATION_LINE_LENGTH = 5
 
 FINGERPRINTS_DIRECTORY = 'fingerprints'
 OUTPUT_DIRECTORY = 'fingerprints_processed'
@@ -157,6 +166,33 @@ def perform_extraction_and_overlay(source):
     # Create overlaid image with extracted minutiae
     cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_minutiae_overlaid.png', cv2.addWeighted(
         base_fingerprint, 0.8, cv2.imread(extracted_minutiae_img_file_name), 0.4, 0))
+
+    draw = ImageDraw.Draw(extracted_minutiae_img)
+
+    # Mark minutiae with orientation line
+    for entry in minutiae_data:
+        pos_x = entry[0]
+        pos_y = entry[1]
+
+        length = ORIENTATION_LINE_LENGTH
+
+        if (pos_x - length >= 0 and pos_x + length < 300 and pos_y >= 0 and pos_y + length < 300):
+            dx = length * cos((entry[2]) * pi / 180)
+            dy = length * sin((entry[2]) * pi / 180)
+            draw.line([pos_y, pos_x, pos_y + dy, pos_x + dx], fill=128)
+
+    pixels = extracted_minutiae_img.load()
+
+    # Draw minutiae points again on top of the lines
+    for entry in minutiae_data:
+        pixels[entry[1], entry[0]] = RIDGE_ENDING_COLOR_INVERTED if entry[3] == 1 else RIDGE_BIFURCATION_COLOR_INVERTED
+
+    extracted_minutiae_with_orientation_img_file_name = f'{os.path.splitext(source_name)[0]}_minutiae_orientation_extracted.png'
+    extracted_minutiae_img.save(extracted_minutiae_with_orientation_img_file_name, 'png')
+
+    # Create overlaid image with extracted minutiae and orientation
+    cv2.imwrite(f'{os.path.splitext(source_name)[0]}_minutiae_orientation_overlaid.png', cv2.addWeighted(
+        base_fingerprint, 0.8, cv2.imread(extracted_minutiae_with_orientation_img_file_name), 0.4, 0))
 
     # Move back to main directory
     os.chdir('..')
