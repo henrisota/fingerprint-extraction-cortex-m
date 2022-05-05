@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "config.h"
-#include "imageio.h"
 #include "segment.h"
 #include "utils.h"
 
