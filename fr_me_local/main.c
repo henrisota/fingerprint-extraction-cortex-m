@@ -20,7 +20,9 @@ int main(int argc, char *argv[]) {
     // Keep the segmentation of the blocks of the image
     unsigned char *segmentation_array;
     int segmentation_array_size;
-    // Keep the extracted features (minutiae)
+    // Keep the orientation of the blocks of the image
+    unsigned char *orientation_array;
+    int orientation_array_size;
 
     if (argc < 2) {
         printf("Not enough parameters");
@@ -32,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     preprocess(image, length, width, &segmentation_array, &segmentation_array_size);
 
-    extract(image, length, width, &segmentation_array, segmentation_array_size);
+    extract(image, length, width, &segmentation_array, segmentation_array_size, &orientation_array, &orientation_array_size);
 
     // Deallocate memory of the segmentation array
     free(segmentation_array);
