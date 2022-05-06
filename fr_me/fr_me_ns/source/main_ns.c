@@ -51,9 +51,9 @@ int main(void) {
 
         result = ExtractMinutiae_NSE(LENGTH, WIDTH);
 
-		if (result == 1) {
-			PRINTF("The extraction was successful.\r\n");
-		}
+        if (result == 1) {
+            PRINTF("The extraction was successful.\r\n");
+        }
     }
 
     PRINTF_NSE("Going into looping state...\r\n");
