@@ -4,7 +4,6 @@
  *  Created on: May 6, 2022
  *      Author: dante
  */
-#include <stdio.h>
 #include <math.h>
 
 #include "fsl_debug_console.h"
