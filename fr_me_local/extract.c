@@ -359,10 +359,10 @@ int extract_minutiae(unsigned char **image, long length, long width, unsigned ch
                 block_orientation = orientation_array[(i / BLOCK_ROW_SIZE) * no_blocks_cols + (j / BLOCK_COL_SIZE)];
 
                 if (neighbor_number == 1 && cn == 1) {
-                    printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
+                    // printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
                     fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
                 } else if (neighbor_number == 3 && cn == 3) {
-                    printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
+                    // printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
                     fprintf(fp, "%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
                 }
             }
