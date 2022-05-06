@@ -186,6 +186,35 @@ int PrintSegmentationArray(unsigned char *segmentation_array, int segmentation_a
     PRINTF("\r\n");
 }
 
+int ApplySegmentationOnImage(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int image_length, unsigned int image_width, unsigned char *segmentation_array, int segmentation_array_size) {
+    int i, j;
+
+    if (VERBOSE) {
+        PRINTF("Starting applying segmentation on image.\r\n");
+    }
+
+    int no_blocks_rows = GetRowsOfBlocks(image_length);
+    int no_blocks_cols = GetColsOfBlocks(image_width);
+
+    for (i = 0; i < segmentation_array_size; ++i) {
+        char no_blocks_saved_in_char = 4;
+
+        if (i == segmentation_array_size - 1 && (no_blocks_rows * no_blocks_cols) % 4) {
+            no_blocks_saved_in_char = (no_blocks_rows * no_blocks_cols) % 4;
+        }
+
+        for (j = 0; j < no_blocks_saved_in_char; ++j) {
+            // Create mask at certain position in character to retrieve the
+            // segmentation result of the block from the char
+            char mask = BLOCK_MASK << (6 - 2 * j);
+
+            if ((mask & segmentation_array[i]) >> (6 - 2 * j) == BACKGROUND_BLOCK) {
+                CleanBlock(image, i * 4 + j, image_length, image_width);
+            }
+        }
+    }
+}
+
 int Segment(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int length, unsigned int width, unsigned char *segmentation_array, int *segmentation_array_size) {
     int i;
     int j;
@@ -267,8 +296,10 @@ int Segment(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int
     // are background blocks
     ErodeLoneBlocks(segmentation_array, *segmentation_array_size, no_blocks_rows, no_blocks_cols);
 
+    ApplySegmentationOnImage(image, length, width, segmentation_array, *segmentation_array_size);
+
     if (VERBOSE) {
-        PRINTF("Finished segmentation of image.\n");
+        PRINTF("Finished segmentation of image.\r\n");
     }
 
     return 1;
