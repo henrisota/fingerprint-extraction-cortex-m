@@ -13,6 +13,7 @@
 #include "../secret/secret.h"
 #include "extract.h"
 #include "preprocess.h"
+#include "enhance.h"
 
 // Keep the grayscale image
 struct fingerprint_image_t finger;
@@ -54,7 +55,7 @@ unsigned int LoadFingerprintImage(unsigned char fingerprint[][10], unsigned int 
             PRINTF("...\n");
 
             for (j = 0; j < width; ++j) {
-                PRINTF("%d ", finger.data[(length * width + j) / MAX_IMAGE_WIDTH][(length * width + j % MAX_IMAGE_WIDTH)]);
+                PRINTF("%d ", finger.data[((length - 1) * width + j) / MAX_IMAGE_WIDTH][((length - 1) * width + j) % MAX_IMAGE_WIDTH]);
             }
             PRINTF("\n");
         }
@@ -76,6 +77,6 @@ unsigned int ExtractMinutiae(unsigned int length, unsigned int width) {
     Preprocess(finger.data, finger.length, finger.width, segmentation_array, &segmentation_array_size);
 
     if (VERBOSE) {
-        PRINTF("Finished extraction of minutiae from the fingerprint image in the secure world\r\n");
+        PRINTF("\r\nFinished extraction of minutiae from the fingerprint image in the secure world.\r\n");
     }
 }
