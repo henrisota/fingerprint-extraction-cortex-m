@@ -24,6 +24,8 @@
 #define CONTRAST_CONSTANT   2
 #define CONTRAST_BLOCK_SIZE 11
 
+#define BLOCK_MASK 0b11
+
 #define BLOCK_ROW_SIZE 8
 #define BLOCK_COL_SIZE 8
 
