@@ -15,7 +15,7 @@
 #include "stdint.h"
 #include "tzm_api.h"
 
-#include "../source/fingerprint_extraction/extract.h"
+#include "../source/fingerprint_extraction/main.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -68,5 +68,5 @@ TZM_IS_NOSECURE_ENTRY unsigned int LoadFingerprintImage_NSE(unsigned char finger
 };
 
 TZM_IS_NOSECURE_ENTRY unsigned int ExtractMinutiae_NSE(unsigned int length, unsigned int width) {
-	return ExtractMinutiae(length, width);
+    return ExtractMinutiae(length, width);
 }
