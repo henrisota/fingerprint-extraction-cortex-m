@@ -12,7 +12,7 @@
 #include "../utils.h"
 #include "segment.h"
 #include "orientation.h"
-// #include "thin.h"
+#include "thin.h"
 
 #define RIDGE_ENDING      1
 #define RIDGE_BIFURCATION 2
@@ -34,8 +34,8 @@
 #define P9_X -1
 #define P9_Y -1
 
-const char transitions_row_positions[9] = { P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X };
-const char transitions_col_positions[9] = { P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y };
+const int transitions_row_positions[9] = { P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X };
+const int transitions_col_positions[9] = { P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y };
 
 int DivideBlocksIntoTypes(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int image_length, unsigned int image_width, unsigned char *segmentation_array, int segmentation_array_size) {
     int i, j;
@@ -261,6 +261,78 @@ int ErodeLoneTypeBlocks(char block_type, unsigned char *segmentation_array, int 
     return 1;
 }
 
+int CrossingNumber(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], long width, int pixel_pos, int *neighbor_number) {
+    int cn = 0;
+    int neighbor_pixel_pos;
+    int successive_neighbor_pixel_pos;
+    unsigned char neighbor_pixel_intensity;
+    unsigned char successive_neighbor_pixel_intensity;
+    int d;
+
+    // Calculate number of valley to ridge or vice versa transitions
+    // between neighbors in clockwise fashion
+    for (d = 0; d < 8; ++d) {
+        neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d] + transitions_col_positions[d];
+        successive_neighbor_pixel_pos = pixel_pos + width * transitions_row_positions[d + 1] + transitions_col_positions[d + 1];
+
+        neighbor_pixel_intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+        successive_neighbor_pixel_intensity = image[successive_neighbor_pixel_pos / MAX_IMAGE_WIDTH][successive_neighbor_pixel_pos % MAX_IMAGE_WIDTH];
+
+        if (neighbor_pixel_intensity == RIDGE_INTENSITY) {
+            (*neighbor_number) += 1;
+        }
+
+        // Check for valley to ridge or vice versa transition
+        if ((neighbor_pixel_intensity == VALLEY_INTENSITY && successive_neighbor_pixel_intensity == RIDGE_INTENSITY) ||
+            (neighbor_pixel_intensity == RIDGE_INTENSITY && successive_neighbor_pixel_intensity == VALLEY_INTENSITY)) {
+            ++cn;
+        }
+    }
+
+    cn >>= 1;
+
+    return cn;
+}
+
+int ExtractMinutiaeFromThinnedImage(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], long length, long width, unsigned char *orientation_array, int orientation_array_size) {
+    int i, j;
+    int pixel_pos;
+    int cn;
+    int neighbor_number;
+    int block_orientation;
+
+    if (VERBOSE) {
+        PRINTF("Starting extraction using Crossing Number concept.\r\n");
+    }
+
+    int no_blocks_cols = GetColsOfBlocks(width);
+
+    for (i = 1; i < length - 1; ++i) {
+        for (j = 1; j < width - 1; ++j) {
+            pixel_pos = width * i + j;
+
+            if (image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] == RIDGE_INTENSITY) {
+                neighbor_number = 0;
+                cn = CrossingNumber(image, width, pixel_pos, &neighbor_number);
+
+                block_orientation = orientation_array[(i / BLOCK_ROW_SIZE) * no_blocks_cols + (j / BLOCK_COL_SIZE)];
+
+                if (neighbor_number == 1 && cn == 1) {
+                     printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_ENDING);
+                } else if (neighbor_number == 3 && cn == 3) {
+                     printf("%03d,%03d,%03d,%d\n", i, j, block_orientation, RIDGE_BIFURCATION);
+                }
+            }
+        }
+    }
+
+    if (VERBOSE) {
+        PRINTF("Finished extraction using Crossing Number concept.\r\n");
+    }
+
+    return 1;
+}
+
 int Extract(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int length, unsigned int width, unsigned char *segmentation_array, int segmentation_array_size, unsigned char *orientation_array, int *orientation_array_size) {
     if (VERBOSE) {
         PRINTF("Starting extraction of features.\r\n");
@@ -279,7 +351,13 @@ int Extract(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int
 
     CalculateLocalOrientation(image, length, width, segmentation_array, segmentation_array_size, orientation_array, orientation_array_size);
 
+    Thin(image, length, width, segmentation_array, segmentation_array_size);
+
+    PrintSegmentationArray(segmentation_array, segmentation_array_size, length, width);
+
     // PrintOrientationArray(orientation_array, *orientation_array_size, length, width);
+
+    ExtractMinutiaeFromThinnedImage(image, length, width, orientation_array, *orientation_array_size);
 
     if (VERBOSE) {
         PRINTF("Finished extraction of features.\r\n");
