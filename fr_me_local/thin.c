@@ -739,20 +739,20 @@ int iterative_zhang_suen_block_thin(unsigned char **image, long length, long wid
     int block_start_row;
     int block_start_col;
 
-    const char transitions_row_positions[9] = {P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X};
-    const char transitions_col_positions[9] = {P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y};
+    const int transitions_row_positions[9] = {P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X};
+    const int transitions_col_positions[9] = {P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y};
 
-    const char A_one_odd_iteration_first_group_row_positions[3] = {P2_X, P4_X, P6_X};
-    const char A_one_odd_iteration_first_group_col_positions[3] = {P2_Y, P4_Y, P6_Y};
+    const int A_one_odd_iteration_first_group_row_positions[3] = {P2_X, P4_X, P6_X};
+    const int A_one_odd_iteration_first_group_col_positions[3] = {P2_Y, P4_Y, P6_Y};
 
-    const char A_one_odd_iteration_second_group_row_positions[3] = {P4_X, P6_X, P8_X};
-    const char A_one_odd_iteration_second_group_col_positions[3] = {P4_Y, P6_Y, P8_Y};
+    const int A_one_odd_iteration_second_group_row_positions[3] = {P4_X, P6_X, P8_X};
+    const int A_one_odd_iteration_second_group_col_positions[3] = {P4_Y, P6_Y, P8_Y};
 
-    const char A_one_even_iteration_first_group_row_positions[3] = {P2_X, P4_X, P8_X};
-    const char A_one_even_iteration_first_group_col_positions[3] = {P2_Y, P4_Y, P8_Y};
+    const int A_one_even_iteration_first_group_row_positions[3] = {P2_X, P4_X, P8_X};
+    const int A_one_even_iteration_first_group_col_positions[3] = {P2_Y, P4_Y, P8_Y};
 
-    const char A_one_even_iteration_second_group_row_positions[3] = {P2_X, P6_X, P8_X};
-    const char A_one_even_iteration_second_group_col_positions[3] = {P2_Y, P6_Y, P8_Y};
+    const int A_one_even_iteration_second_group_row_positions[3] = {P2_X, P6_X, P8_X};
+    const int A_one_even_iteration_second_group_col_positions[3] = {P2_Y, P6_Y, P8_Y};
 
     if (VERBOSE) {
         printf("Starting iterative modified Zhang-Suen block thinning on image.\n");
@@ -918,7 +918,7 @@ int iterative_zhang_suen_block_thin(unsigned char **image, long length, long wid
                 // Thin based on the marked block in block array
                 for (i = 1; i < ZS_THINNING_BLOCK_ROW_SIZE - 1; ++i) {
                     for (j = 1; j < ZS_THINNING_BLOCK_COL_SIZE - 1; ++j) {
-                        if (block[i][j]) {
+                        if (block[i][j] == 1) {
                             pixel_pos = width * (block_start_row + i) + (block_start_col + j);
                             image[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH] = VALLEY_INTENSITY;
                         }
