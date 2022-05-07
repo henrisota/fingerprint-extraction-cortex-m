@@ -27,8 +27,8 @@
 #define P9_X -1
 #define P9_Y -1
 
-const char transitions_row_positions[9] = { P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X };
-const char transitions_col_positions[9] = { P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y };
+const int transitions_row_positions[9] = {P2_X, P3_X, P4_X, P5_X, P6_X, P7_X, P8_X, P9_X, P2_X};
+const int transitions_col_positions[9] = {P2_Y, P3_Y, P4_Y, P5_Y, P6_Y, P7_Y, P8_Y, P9_Y, P2_Y};
 
 int divide_blocks_into_types(unsigned char **image, long image_length, long image_width, unsigned char **segmentation_array, int segmentation_array_size) {
     int i;
@@ -63,8 +63,8 @@ int divide_blocks_into_types(unsigned char **image, long image_length, long imag
 
                 int r;
                 int c;
-                int sum_of_rows[BLOCK_ROW_SIZE] = { 0 };
-                int sum_of_cols[BLOCK_COL_SIZE] = { 0 };
+                int sum_of_rows[BLOCK_ROW_SIZE] = {0};
+                int sum_of_cols[BLOCK_COL_SIZE] = {0};
 
                 // Set the initial minimum to a value as the biggest possible (8 * 255)
                 int min_sum_of_rows = 2040;
