@@ -5,10 +5,10 @@
  *      Author: dante
  */
 
-#ifndef _FINGERPRINT_EXTRACTION_EXTRACT_H_
-#define _FINGERPRINT_EXTRACTION_EXTRACT_H_
+#ifndef FINGERPRINT_EXTRACTION_MAIN_H_
+#define FINGERPRINT_EXTRACTION_MAIN_H_
 
 unsigned int LoadFingerprintImage(unsigned char fingerprint[][10], unsigned int length, unsigned int width, char *key);
 unsigned int ExtractMinutiae(unsigned int length, unsigned int width);
 
-#endif /* _FINGERPRINT_EXTRACTION_EXTRACT_H_ */
+#endif /* FINGERPRINT_EXTRACTION_MAIN_H_ */
