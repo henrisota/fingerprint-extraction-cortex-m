@@ -31,15 +31,15 @@
 #define P9_X 1
 #define P9_Y 1
 
-const char horizontal_sobel_row_positions[6] = { P1_X, P2_X, P3_X, P7_X, P8_X, P9_X };
-const char horizontal_sobel_col_positions[6] = { P1_Y, P2_Y, P3_Y, P7_Y, P8_Y, P9_Y };
+const int horizontal_sobel_row_positions[6] = { P1_X, P2_X, P3_X, P7_X, P8_X, P9_X };
+const int horizontal_sobel_col_positions[6] = { P1_Y, P2_Y, P3_Y, P7_Y, P8_Y, P9_Y };
 
-const char vertical_sobel_row_positions[6] = { P1_X, P4_X, P7_X, P3_X, P6_X, P9_X };
-const char vertical_sobel_col_positions[6] = { P1_Y, P3_Y, P4_Y, P6_Y, P7_Y, P9_Y };
+const int vertical_sobel_row_positions[6] = { P1_X, P4_X, P7_X, P3_X, P6_X, P9_X };
+const int vertical_sobel_col_positions[6] = { P1_Y, P3_Y, P4_Y, P6_Y, P7_Y, P9_Y };
 
-const char sobel_coefficients[6] = { 1, 2, 1, -1, -2, -1 };
+const int sobel_coefficients[6] = { 1, 2, 1, -1, -2, -1 };
 
-int CalculateBlockOrientation(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int length, unsigned int width, int block_start_row, int block_start_col) {
+int CalculateBlockOrientation(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], long length, long width, int block_start_row, int block_start_col) {
     // Keep track of block orientation in degrees
     float block_orientation = 0;
     float angle_rad = 0;
@@ -70,7 +70,7 @@ int CalculateBlockOrientation(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WI
             for (d = 0; d < 6; ++d) {
                 neighbor_pixel_pos = pixel_pos + width * horizontal_sobel_row_positions[d] + horizontal_sobel_col_positions[d];
                 intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
-                g_x += (255 - intensity) * sobel_coefficients[d];
+                g_x += (256 - intensity) * sobel_coefficients[d];
             }
 
             if (g_x == 0) {
@@ -82,7 +82,7 @@ int CalculateBlockOrientation(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WI
             for (d = 0; d < 6; ++d) {
                 neighbor_pixel_pos = pixel_pos + width * vertical_sobel_row_positions[d] + vertical_sobel_col_positions[d];
                 intensity = image[neighbor_pixel_pos / MAX_IMAGE_WIDTH][neighbor_pixel_pos % MAX_IMAGE_WIDTH];
-                g_y += (255 - intensity) * sobel_coefficients[d];
+                g_y += (256 - intensity) * sobel_coefficients[d];
             }
 
             // Calculate angle using atan2(vertical gradient / horizontal gradient)
