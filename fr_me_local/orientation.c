@@ -25,13 +25,13 @@
 #define P9_X 1
 #define P9_Y 1
 
-const char horizontal_sobel_row_positions[6] = {P1_X, P2_X, P3_X, P7_X, P8_X, P9_X};
-const char horizontal_sobel_col_positions[6] = {P1_Y, P2_Y, P3_Y, P7_Y, P8_Y, P9_Y};
+const int horizontal_sobel_row_positions[6] = {P1_X, P2_X, P3_X, P7_X, P8_X, P9_X};
+const int horizontal_sobel_col_positions[6] = {P1_Y, P2_Y, P3_Y, P7_Y, P8_Y, P9_Y};
 
-const char vertical_sobel_row_positions[6] = {P1_X, P4_X, P7_X, P3_X, P6_X, P9_X};
-const char vertical_sobel_col_positions[6] = {P1_Y, P3_Y, P4_Y, P6_Y, P7_Y, P9_Y};
+const int vertical_sobel_row_positions[6] = {P1_X, P4_X, P7_X, P3_X, P6_X, P9_X};
+const int vertical_sobel_col_positions[6] = {P1_Y, P3_Y, P4_Y, P6_Y, P7_Y, P9_Y};
 
-const char sobel_coefficients[6] = {1, 2, 1, -1, -2, -1};
+const int sobel_coefficients[6] = {1, 2, 1, -1, -2, -1};
 
 unsigned char *create_orientation_array(int no_blocks_rows, int no_blocks_cols, int *orientation_array_size) {
     *orientation_array_size = no_blocks_rows * no_blocks_cols;
