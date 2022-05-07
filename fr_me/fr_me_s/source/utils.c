@@ -150,3 +150,18 @@ int SetBlock(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], int block_i
 
     return 1;
 }
+
+int PrintImageArray(unsigned char image_array[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int length, unsigned int width) {
+    int i, j;
+
+    for (i = 0; i < length; ++i) {
+        for (j = 0; j < width; ++j) {
+            int pixel_pos = width * i + j;
+            printf("%d ", image_array[pixel_pos / MAX_IMAGE_WIDTH][pixel_pos % MAX_IMAGE_WIDTH]);
+        }
+
+        printf("\n");
+    }
+
+    return 1;
+}

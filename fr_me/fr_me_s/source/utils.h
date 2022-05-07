@@ -21,4 +21,6 @@ int GetBlockStartFromIndex(int i, unsigned int length, unsigned int width, int *
 int SetBlock(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], int block_index, unsigned int image_length, unsigned int image_width, unsigned char intensity);
 int CleanBlock(unsigned char image[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], int block_index, unsigned int image_length, unsigned int image_width);
 
+int PrintImageArray(unsigned char image_array[MAX_IMAGE_LENGTH][MAX_IMAGE_WIDTH], unsigned int length, unsigned int width);
+
 #endif /* UTILS_H_ */
