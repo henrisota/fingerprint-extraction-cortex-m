@@ -396,17 +396,15 @@ int extract(unsigned char **image, long length, long width, unsigned char **segm
     // Perform erosion on type 2 (vertical) blocks which are found between type 1 (horizontal) blocks
     erode_lone_type_blocks(TYPE_2_V_BLOCK, segmentation_array, segmentation_array_size, no_blocks_rows, no_blocks_cols);
 
+    print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
+
     // apply_block_division_on_image(image, length, width, segmentation_array, segmentation_array_size);
 
     *orientation_array = calculate_local_orientation(image, length, width, segmentation_array, segmentation_array_size, orientation_array_size);
 
-    thin(image, length, width, segmentation_array, segmentation_array_size);
-
-    print_segmentation_array(*segmentation_array, segmentation_array_size, length, width);
-
     // print_orientation_array(*orientation_array, *orientation_array_size, length, width);
 
-    print_image_array(image, length, width, OUTPUT_TO_FILE);
+    thin(image, length, width, segmentation_array, segmentation_array_size);
 
     extract_minutiae(image, length, width, *orientation_array, *orientation_array_size);
 
