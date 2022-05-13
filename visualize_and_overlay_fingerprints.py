@@ -133,11 +133,22 @@ def perform_extraction_and_overlay(source):
     # Load the image into cv2
     overlay_fingerprint = cv2.imread(output_image_file_name)
 
+    h, w, c = overlay_fingerprint.shape
+
+    overlay_fingerprint_bgra = np.concatenate([overlay_fingerprint, np.full((h, w, 1), 255, dtype=np.uint8)], axis=-1)
+
+    background = np.all(overlay_fingerprint == [0, 0, 0], axis=-1)
+
+    overlay_fingerprint_bgra[background, -1] = 0
+
     # Create original image on the output directory for comparison
     cv2.imwrite(source_name, base_fingerprint)
 
     # Create processed image on the output directory for comparison
     cv2.imwrite(f'{os.path.splitext(source_name)[0]}_processed.bmp', overlay_fingerprint)
+
+    # Create processed image on the output directory for comparison with transparent background
+    cv2.imwrite(f'{os.path.splitext(source_name)[0]}_processed_transparent_bg.png', overlay_fingerprint_bgra)
 
     # Create overlaid image
     cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_overlaid.bmp',
@@ -163,9 +174,22 @@ def perform_extraction_and_overlay(source):
     extracted_minutiae_img_file_name = f'{os.path.splitext(source_name)[0]}_minutiae_extracted.png'
     extracted_minutiae_img.save(extracted_minutiae_img_file_name)
 
+    extracted_minutiae_img_loaded = cv2.imread(extracted_minutiae_img_file_name)
+    h, w, c = extracted_minutiae_img_loaded.shape
+
+    extracted_minutiae_img_bgra = np.concatenate(
+        [extracted_minutiae_img_loaded, np.full((h, w, 1), 255, dtype=np.uint8)], axis=-1)
+
+    background = np.all(extracted_minutiae_img_loaded == [0, 0, 0], axis=-1)
+
+    extracted_minutiae_img_bgra[background, -1] = 0
+
     # Create overlaid image with extracted minutiae
     cv2.imwrite(f'{os.path.splitext(output_file_name)[0]}_minutiae_overlaid.png', cv2.addWeighted(
         base_fingerprint, 0.8, cv2.imread(extracted_minutiae_img_file_name), 0.4, 0))
+
+    # Create overlaid image with extracted minutiae and transparent background
+    cv2.imwrite(f'{os.path.splitext(source_name)[0]}_minutiae_overlaid_transparent_bg.png', extracted_minutiae_img_bgra)
 
     draw = ImageDraw.Draw(extracted_minutiae_img)
 
